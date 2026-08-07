@@ -2,13 +2,13 @@
 
 Personal TUI radar built with [Ink](https://github.com/vadimdemedes/ink) — everything on
 your radar in one terminal: Apple Calendar events, Apple Mail unread messages, the daily
-note, Alertmanager.app alerts and GitHub pull requests / notifications in configurable
+note, Alertmanager.app alerts and GitHub pull requests / issues / notifications in configurable
 dashboards.
 
 ## Requirements
 
 - Node.js >= 20 and `swiftc` (Xcode toolchain) for the calendar helper
-- `gh` (authenticated) for the GitHub panels
+- `gh` (authenticated) for the GitHub panels; `gh-notifications` for the notifications panel
 - [Alertmanager.app](https://github.com/ricoberger/Alertmanager) running for the alerts panel
 - Mail.app running for the mail panel
 
@@ -30,18 +30,18 @@ grant your terminal access to your calendars.
 
 ## Keybindings
 
-| Key               | Action                                        |
-| ----------------- | --------------------------------------------- |
-| `[`/`]`           | previous / next dashboard                     |
-| `1`-`9`           | focus panel                                   |
-| `tab`/`shift-tab` | cycle focus                                   |
-| `j`/`k`           | select item / scroll                          |
-| `g`/`G`           | first / last item                             |
-| `enter`           | open / view item, edit the daily note         |
-| `z`               | zoom focused panel                            |
-| `r`/`R`           | refresh focused / all panels                  |
-| `?`               | help                                          |
-| `q`               | quit                                          |
+| Key               | Action                                |
+| ----------------- | ------------------------------------- |
+| `[`/`]`           | previous / next dashboard             |
+| `1`-`9`           | focus panel                           |
+| `tab`/`shift-tab` | cycle focus                           |
+| `j`/`k`           | select item / scroll                  |
+| `g`/`G`           | first / last item                     |
+| `enter`           | open / view item, edit the daily note |
+| `z`               | zoom focused panel                    |
+| `r`/`R`           | refresh focused / all panels          |
+| `?`               | help                                  |
+| `q`               | quit                                  |
 
 ## Configuration
 
@@ -114,8 +114,9 @@ A layout node is either a split (`direction` + `children`) or a panel. Every nod
 | `ricoberger-notes`     | `dir` (required), `day`                   | A daily note, rendered with `md`           |
 | `apple-mail`           | `messages`, `limit`, `include`, `exclude` | Messages from the Mail.app inboxes         |
 | `alertmanager`         | `url`, `filter` / `alertmanager`          | Alerts from Alertmanager.app               |
-| `github-prs`           | `query`, `limit` (20)                     | Pull requests from a `gh search prs` query |
-| `github-notifications` | `limit` (50)                              | Unread GitHub notifications                |
+| `github-prs`           | `query` (required), `limit` (20), `open`  | Pull requests from a `gh search prs` query |
+| `github-issues`        | `query` (required), `limit` (20), `open`  | Issues from a `gh search issues` query     |
+| `github-notifications` | `limit` (50), `open`                      | GitHub notifications via gh-notifications  |
 
 The apple-calendar panel shows a single day by default: `day` selects `yesterday`, `today`
 (default) or `tomorrow`. With `view: week` it shows the full week (Monday–Sunday,
@@ -148,5 +149,14 @@ alert Markdown in the editor, `o`/`s`/`b`/`d`/`p` open the source / silence /
 runbook / dashboard / panel link in the browser (ignored when the alert has no
 such link), `a` open the finished analysis in the editor or start a new run,
 `y` copy the source URL to the clipboard.
+
+The github-prs and github-issues panels list the results of a `gh search prs` /
+`gh search issues` query (required). The github-notifications panel lists all
+notifications from the [gh-notifications](https://github.com/ricoberger/dotfiles)
+helper, read and unread. All three use the fzfgh row layout with state-colored
+icons. `open` selects what enter does: `browser` (default) opens the item in
+the web browser, `fzfgh` opens pull requests and issues in
+[fzfgh](https://github.com/ricoberger/dotfiles) (other notification types
+still open in the browser).
 
 Panels keep their last data when a refresh fails and show the error in the header.

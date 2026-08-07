@@ -11,7 +11,12 @@ import {
   validateAppleCalendarParams,
 } from './AppleCalendarPanel.js';
 import { AppleMailPanel, validateAppleMailParams } from './AppleMailPanel.js';
-import { GithubNotificationsPanel } from './GithubNotificationsPanel.js';
+import { validateGithubSearchParams } from './github.js';
+import { GithubIssuesPanel } from './GithubIssuesPanel.js';
+import {
+  GithubNotificationsPanel,
+  validateGithubNotificationsParams,
+} from './GithubNotificationsPanel.js';
 import { GithubPrsPanel } from './GithubPrsPanel.js';
 import {
   RicobergerNotesPanel,
@@ -49,8 +54,21 @@ export const panelDefaults: Record<string, PanelTypeDefaults> = {
     interval: 60,
     validateParams: validateAlertmanagerParams,
   },
-  'github-prs': { title: 'Pull Requests', interval: 120 },
-  'github-notifications': { title: 'GitHub Notifications', interval: 120 },
+  'github-prs': {
+    title: 'Pull Requests',
+    interval: 300,
+    validateParams: validateGithubSearchParams('github-prs'),
+  },
+  'github-issues': {
+    title: 'Issues',
+    interval: 300,
+    validateParams: validateGithubSearchParams('github-issues'),
+  },
+  'github-notifications': {
+    title: 'GitHub Notifications',
+    interval: 300,
+    validateParams: validateGithubNotificationsParams,
+  },
 };
 
 export const panelComponents: Record<string, ComponentType<PanelProps>> = {
@@ -59,5 +77,6 @@ export const panelComponents: Record<string, ComponentType<PanelProps>> = {
   'apple-mail': AppleMailPanel,
   alertmanager: AlertmanagerPanel,
   'github-prs': GithubPrsPanel,
+  'github-issues': GithubIssuesPanel,
   'github-notifications': GithubNotificationsPanel,
 };

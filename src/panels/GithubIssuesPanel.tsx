@@ -14,9 +14,9 @@ import {
   searchItemColor,
 } from './github.js';
 
-const ICON_PR = '\uf407';
+const ICON_ISSUE = '\uf41b';
 
-export function GithubPrsPanel({
+export function GithubIssuesPanel({
   id,
   index,
   title,
@@ -30,12 +30,12 @@ export function GithubPrsPanel({
   const open = readOpenParam(params);
   const { data, error, loading, lastUpdated } = usePanelData(
     id,
-    () => searchGithub('prs', query, limit),
+    () => searchGithub('issues', query, limit),
     interval,
   );
-  const prs = data ?? [];
-  const selected = useListNavigation(id, prs.length, (i) =>
-    openGithubItem(prs[i].url, open, runExternal),
+  const issues = data ?? [];
+  const selected = useListNavigation(id, issues.length, (i) =>
+    openGithubItem(issues[i].url, open, runExternal),
   );
 
   return (
@@ -47,18 +47,18 @@ export function GithubPrsPanel({
       loading={loading}
       lastUpdated={lastUpdated}
     >
-      {prs.length === 0 && data ? (
-        <Text dimColor>No pull requests</Text>
+      {issues.length === 0 && data ? (
+        <Text dimColor>No issues</Text>
       ) : (
         <SelectList
-          items={prs}
+          items={issues}
           selected={focused ? selected : -1}
-          renderItem={(pr, isSelected) => (
+          renderItem={(issue, isSelected) => (
             <Text wrap="truncate" bold={isSelected}>
               {isSelected ? '❯ ' : '  '}
-              <Text color={searchItemColor(pr)}>{ICON_PR}</Text> [#{pr.number}]{' '}
-              {pr.repository}: {pr.title}
-              {'  '}({pr.author} · {reltime(pr.createdAt)})
+              <Text color={searchItemColor(issue)}>{ICON_ISSUE}</Text> [#
+              {issue.number}] {issue.repository}: {issue.title}
+              {'  '}({issue.author} · {reltime(issue.createdAt)})
             </Text>
           )}
         />
