@@ -56,7 +56,15 @@ export function PanelFrame({
       paddingX={1}
       overflow="hidden"
     >
-      <Box flexShrink={0} gap={1}>
+      <Box
+        flexShrink={0}
+        gap={1}
+        borderStyle="single"
+        borderTop={false}
+        borderLeft={false}
+        borderRight={false}
+        borderColor={focused ? 'cyan' : 'gray'}
+      >
         <Text bold color={focused ? 'cyan' : undefined} wrap="truncate">
           {index} {title}
         </Text>
