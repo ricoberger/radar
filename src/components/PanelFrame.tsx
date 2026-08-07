@@ -11,9 +11,14 @@ import {
 import { formatAge } from '../utils.js';
 
 const ContentHeightContext = createContext(0);
+const ContentWidthContext = createContext(0);
 
 export function useContentHeight(): number {
   return useContext(ContentHeightContext);
+}
+
+export function useContentWidth(): number {
+  return useContext(ContentWidthContext);
 }
 
 interface PanelFrameProps {
@@ -38,12 +43,14 @@ export function PanelFrame({
   children,
 }: PanelFrameProps) {
   const contentRef = useRef<DOMElement>(null);
-  const [height, setHeight] = useState(0);
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     if (contentRef.current) {
-      const measured = measureElement(contentRef.current).height;
-      if (measured !== height) setHeight(measured);
+      const measured = measureElement(contentRef.current);
+      if (measured.width !== size.width || measured.height !== size.height) {
+        setSize({ width: measured.width, height: measured.height });
+      }
     }
   });
 
@@ -84,8 +91,10 @@ export function PanelFrame({
         flexGrow={1}
         overflow="hidden"
       >
-        <ContentHeightContext.Provider value={height}>
-          {children}
+        <ContentHeightContext.Provider value={size.height}>
+          <ContentWidthContext.Provider value={size.width}>
+            {children}
+          </ContentWidthContext.Provider>
         </ContentHeightContext.Provider>
       </Box>
     </Box>

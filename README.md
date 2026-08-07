@@ -51,7 +51,6 @@ from the first of: the path given as argument (`radar <config.yaml>`), the
 `dashboards` is required, the remaining keys have defaults:
 
 ```yaml
-dailyNotesDir: ~/Documents/GitHub/ricoberger/notes/daily
 alertmanagerUrl: http://127.0.0.1:9093
 editor: nvim # defaults to $EDITOR
 
@@ -67,7 +66,9 @@ dashboards:
               direction: row
               children:
                 - panel: apple-calendar
-                - panel: note
+                - panel: ricoberger-notes
+                  params:
+                    dir: ~/Documents/GitHub/ricoberger/notes/daily
             - weight: 1
               panel: alerts
               interval: 30
@@ -111,7 +112,7 @@ A layout node is either a split (`direction` + `children`) or a panel. Every nod
 | Type                   | Params                                    | Description                                |
 | ---------------------- | ----------------------------------------- | ------------------------------------------ |
 | `apple-calendar`       | `day`, `view`                             | Events from all Apple calendars            |
-| `note`                 | –                                         | Today's daily note, scrollable             |
+| `ricoberger-notes`     | `dir` (required), `day`                   | A daily note, rendered with `md`           |
 | `apple-mail`           | `messages`, `limit`, `include`, `exclude` | Messages from the Mail.app inboxes         |
 | `alerts`               | `filter` (name)                           | Alerts from an Alertmanager.app filter     |
 | `github-prs`           | `query`, `limit` (20)                     | Pull requests from a `gh search prs` query |
@@ -123,6 +124,13 @@ today highlighted, multi-day events repeated under every day they cover) and `da
 ignored. The default title reflects the configuration (e.g. `Calendar · Tomorrow`,
 `Calendar · Week`); an explicit `title` always wins. Events that are currently
 running are shown in green.
+
+The ricoberger-notes panel shows a daily note from `dir` (layout
+`<dir>/YYYY/MM/YYYY-MM-DD.md`, created from `<dir>/template.md`): `day` selects
+`today` (default) or `yesterday`. The note is rendered as Markdown with the
+[`md`](https://github.com/ricoberger/md) binary if it is on the `PATH`
+(YAML frontmatter is stripped), otherwise as plain text. Enter opens the note
+in the configured editor; yesterday's note is never created retroactively.
 
 The apple-mail panel shows the newest `limit` (default `10`) messages across the
 inboxes of all accounts as `sender · subject · age · account`. `messages` selects

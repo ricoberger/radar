@@ -41,7 +41,7 @@ src/
                 registry. Survives remounts (e.g. editor suspend/resume)
   context.ts    React context (focus, zoom, screen size)
   utils.ts      exec helpers, time formatting
-  components/   PanelFrame (border + title), SelectList, MarkdownLine
+  components/   PanelFrame (border + title), SelectList
   hooks/
     usePanelData.ts  Interval fetching with cache-age-aware initial delay,
                      stale-data-on-error

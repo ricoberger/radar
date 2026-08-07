@@ -8,8 +8,10 @@ dashboards:
         - direction: column
           children:
             - panel: apple-calendar
-            - panel: note
+            - panel: ricoberger-notes
               weight: 2
+              params:
+                dir: ~/Documents/GitHub/ricoberger/notes/daily
         - direction: column
           children:
             - panel: github-prs

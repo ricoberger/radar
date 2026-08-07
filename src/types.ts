@@ -24,7 +24,6 @@ export interface Dashboard {
 }
 
 export interface Config {
-  dailyNotesDir: string;
   alertmanagerUrl: string;
   editor: string;
   dashboards: Dashboard[];

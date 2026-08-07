@@ -10,7 +10,11 @@ import {
 import { AppleMailPanel, validateAppleMailParams } from './AppleMailPanel.js';
 import { GithubNotificationsPanel } from './GithubNotificationsPanel.js';
 import { GithubPrsPanel } from './GithubPrsPanel.js';
-import { NotePanel } from './NotePanel.js';
+import {
+  RicobergerNotesPanel,
+  ricobergerNotesTitle,
+  validateRicobergerNotesParams,
+} from './RicobergerNotesPanel.js';
 
 export interface PanelTypeDefaults {
   title: string;
@@ -26,7 +30,12 @@ export const panelDefaults: Record<string, PanelTypeDefaults> = {
     deriveTitle: appleCalendarTitle,
     validateParams: validateAppleCalendarParams,
   },
-  note: { title: 'Daily Note', interval: 5 },
+  'ricoberger-notes': {
+    title: 'Daily Note',
+    interval: 300,
+    deriveTitle: ricobergerNotesTitle,
+    validateParams: validateRicobergerNotesParams,
+  },
   'apple-mail': {
     title: 'Mail',
     interval: 300,
@@ -39,7 +48,7 @@ export const panelDefaults: Record<string, PanelTypeDefaults> = {
 
 export const panelComponents: Record<string, ComponentType<PanelProps>> = {
   'apple-calendar': AppleCalendarPanel,
-  note: NotePanel,
+  'ricoberger-notes': RicobergerNotesPanel,
   'apple-mail': AppleMailPanel,
   alerts: AlertsPanel,
   'github-prs': GithubPrsPanel,

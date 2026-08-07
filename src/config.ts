@@ -14,21 +14,9 @@ const DEFAULT_CONFIG_PATH = path.join(
 );
 
 const defaults: Omit<Config, 'dashboards'> = {
-  dailyNotesDir: path.join(
-    os.homedir(),
-    'Documents',
-    'GitHub',
-    'ricoberger',
-    'notes',
-    'daily',
-  ),
   alertmanagerUrl: 'http://127.0.0.1:9093',
   editor: process.env.EDITOR || 'vim',
 };
-
-function expandHome(p: string): string {
-  return p.startsWith('~/') ? path.join(os.homedir(), p.slice(2)) : p;
-}
 
 function validateLayout(node: LayoutNode, trail: string): void {
   if (isPanelNode(node)) {
@@ -76,7 +64,6 @@ export function loadConfig(argPath?: string): Config {
   }
 
   const config: Config = { ...defaults, dashboards: [], ...fileConfig };
-  config.dailyNotesDir = expandHome(config.dailyNotesDir);
   if (!Array.isArray(config.dashboards) || config.dashboards.length === 0) {
     throw new Error(`${configPath}: "dashboards" must be a non-empty list`);
   }

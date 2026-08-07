@@ -1,4 +1,10 @@
 import { execFile, spawn } from 'node:child_process';
+import os from 'node:os';
+import path from 'node:path';
+
+export function expandHome(p: string): string {
+  return p.startsWith('~/') ? path.join(os.homedir(), p.slice(2)) : p;
+}
 
 export function run(
   command: string,
@@ -19,6 +25,38 @@ export function run(
         resolve(stdout);
       },
     );
+  });
+}
+
+// Like run(), but pipes input to stdin and allows extra environment variables.
+export function runWithInput(
+  command: string,
+  args: string[],
+  input: string,
+  env: Record<string, string> = {},
+  timeoutMs = 20000,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const child = execFile(
+      command,
+      args,
+      {
+        timeout: timeoutMs,
+        maxBuffer: 16 * 1024 * 1024,
+        env: { ...process.env, ...env },
+      },
+      (error, stdout, stderr) => {
+        if (error) {
+          const detail = stderr.trim().split('\n')[0] || error.message;
+          reject(new Error(detail));
+          return;
+        }
+        resolve(stdout);
+      },
+    );
+    child.stdin?.on('error', () => {});
+    child.stdin?.write(input);
+    child.stdin?.end();
   });
 }
 
