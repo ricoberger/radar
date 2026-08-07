@@ -26,7 +26,7 @@ dashboards:
             - panel: alerts
               params:
                 filter: team-core
-            - panel: mail
+            - panel: apple-mail
   - name: Week
     layout:
       direction: row

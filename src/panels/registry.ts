@@ -7,9 +7,9 @@ import {
   appleCalendarTitle,
   validateAppleCalendarParams,
 } from './AppleCalendarPanel.js';
+import { AppleMailPanel, validateAppleMailParams } from './AppleMailPanel.js';
 import { GithubNotificationsPanel } from './GithubNotificationsPanel.js';
 import { GithubPrsPanel } from './GithubPrsPanel.js';
-import { MailPanel } from './MailPanel.js';
 import { NotePanel } from './NotePanel.js';
 
 export interface PanelTypeDefaults {
@@ -27,7 +27,11 @@ export const panelDefaults: Record<string, PanelTypeDefaults> = {
     validateParams: validateAppleCalendarParams,
   },
   note: { title: 'Daily Note', interval: 5 },
-  mail: { title: 'Mail', interval: 60 },
+  'apple-mail': {
+    title: 'Mail',
+    interval: 300,
+    validateParams: validateAppleMailParams,
+  },
   alerts: { title: 'Alerts', interval: 60 },
   'github-prs': { title: 'Pull Requests', interval: 120 },
   'github-notifications': { title: 'GitHub Notifications', interval: 120 },
@@ -36,7 +40,7 @@ export const panelDefaults: Record<string, PanelTypeDefaults> = {
 export const panelComponents: Record<string, ComponentType<PanelProps>> = {
   'apple-calendar': AppleCalendarPanel,
   note: NotePanel,
-  mail: MailPanel,
+  'apple-mail': AppleMailPanel,
   alerts: AlertsPanel,
   'github-prs': GithubPrsPanel,
   'github-notifications': GithubNotificationsPanel,

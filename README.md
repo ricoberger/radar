@@ -89,7 +89,7 @@ dashboards:
   - name: Mail
     layout:
       children:
-        - panel: mail
+        - panel: apple-mail
   - name: Week
     layout:
       panel: apple-calendar
@@ -108,14 +108,14 @@ A layout node is either a split (`direction` + `children`) or a panel. Every nod
 
 ### Panel types
 
-| Type                   | Params                | Description                                 |
-| ---------------------- | --------------------- | ------------------------------------------- |
-| `apple-calendar`       | `day`, `view`         | Events from all Apple calendars             |
-| `note`                 | –                     | Today's daily note, scrollable              |
-| `mail`                 | –                     | Unread messages across all Mail.app inboxes |
-| `alerts`               | `filter` (name)       | Alerts from an Alertmanager.app filter      |
-| `github-prs`           | `query`, `limit` (20) | Pull requests from a `gh search prs` query  |
-| `github-notifications` | `limit` (50)          | Unread GitHub notifications                 |
+| Type                   | Params                                    | Description                                |
+| ---------------------- | ----------------------------------------- | ------------------------------------------ |
+| `apple-calendar`       | `day`, `view`                             | Events from all Apple calendars            |
+| `note`                 | –                                         | Today's daily note, scrollable             |
+| `apple-mail`           | `messages`, `limit`, `include`, `exclude` | Messages from the Mail.app inboxes         |
+| `alerts`               | `filter` (name)                           | Alerts from an Alertmanager.app filter     |
+| `github-prs`           | `query`, `limit` (20)                     | Pull requests from a `gh search prs` query |
+| `github-notifications` | `limit` (50)                              | Unread GitHub notifications                |
 
 The apple-calendar panel shows a single day by default: `day` selects `yesterday`, `today`
 (default) or `tomorrow`. With `view: week` it shows the full week (Monday–Sunday,
@@ -123,5 +123,11 @@ today highlighted, multi-day events repeated under every day they cover) and `da
 ignored. The default title reflects the configuration (e.g. `Calendar · Tomorrow`,
 `Calendar · Week`); an explicit `title` always wins. Events that are currently
 running are shown in green.
+
+The apple-mail panel shows the newest `limit` (default `10`) messages across the
+inboxes of all accounts as `sender · subject · age · account`. `messages` selects
+`unread` (default) or `all`. `include` / `exclude` are lists of account names (as
+shown in Mail.app) to fetch from; if both are set they are ignored and all accounts
+are fetched.
 
 Panels keep their last data when a refresh fails and show the error in the header.
