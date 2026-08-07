@@ -2,14 +2,15 @@
 
 Personal TUI radar built with [Ink](https://github.com/vadimdemedes/ink) — everything on
 your radar in one terminal: Apple Calendar events, Apple Mail unread messages, the daily
-note, Alertmanager.app alerts and GitHub pull requests / issues / notifications in configurable
-dashboards.
+note, Alertmanager.app alerts, GitHub pull requests / issues / notifications and Jira
+work items in configurable dashboards.
 
 ## Requirements
 
 - Node.js >= 20 and `swiftc` (Xcode toolchain) for the calendar helper
 - `gh` (authenticated) for the GitHub panels; `gh-notifications` for the notifications panel
 - [Alertmanager.app](https://github.com/ricoberger/Alertmanager) running for the alerts panel
+- `acli` (authenticated via `acli jira auth login --web`) for the jira panel
 - Mail.app running for the mail panel
 
 ## Install
@@ -108,15 +109,16 @@ A layout node is either a split (`direction` + `children`) or a panel. Every nod
 
 ### Panel types
 
-| Type                   | Params                                    | Description                                |
-| ---------------------- | ----------------------------------------- | ------------------------------------------ |
-| `apple-calendar`       | `day`, `view`                             | Events from all Apple calendars            |
-| `ricoberger-notes`     | `dir` (required), `day`                   | A daily note, rendered with `md`           |
-| `apple-mail`           | `messages`, `limit`, `include`, `exclude` | Messages from the Mail.app inboxes         |
-| `alertmanager`         | `url`, `filter` / `alertmanager`          | Alerts from Alertmanager.app               |
-| `github-prs`           | `query` (required), `limit` (20), `open`  | Pull requests from a `gh search prs` query |
-| `github-issues`        | `query` (required), `limit` (20), `open`  | Issues from a `gh search issues` query     |
-| `github-notifications` | `limit` (50), `open`                      | GitHub notifications via gh-notifications  |
+| Type                   | Params                                      | Description                                |
+| ---------------------- | ------------------------------------------- | ------------------------------------------ |
+| `apple-calendar`       | `day`, `view`                               | Events from all Apple calendars            |
+| `ricoberger-notes`     | `dir` (required), `day`                     | A daily note, rendered with `md`           |
+| `apple-mail`           | `messages`, `limit`, `include`, `exclude`   | Messages from the Mail.app inboxes         |
+| `alertmanager`         | `url`, `filter` / `alertmanager`            | Alerts from Alertmanager.app               |
+| `github-prs`           | `query` (required), `limit` (20), `open`    | Pull requests from a `gh search prs` query |
+| `github-issues`        | `query` (required), `limit` (20), `open`    | Issues from a `gh search issues` query     |
+| `github-notifications` | `limit` (50), `open`                        | GitHub notifications via gh-notifications  |
+| `jira`                 | `jql` (required), `limit` (50), `flagField` | Jira work items from a JQL query via acli  |
 
 The apple-calendar panel shows a single day by default: `day` selects `yesterday`, `today`
 (default) or `tomorrow`. With `view: week` it shows the full week (Monday–Sunday,
@@ -158,5 +160,15 @@ icons. `open` selects what enter does: `browser` (default) opens the item in
 the web browser, `fzfgh` opens pull requests and issues in
 [fzfgh](https://github.com/ricoberger/dotfiles) (other notification types
 still open in the browser).
+
+The jira panel lists the work items of a `jql` query (required) via
+[acli](https://developer.atlassian.com/cloud/acli/), in server order. Each row
+shows the key, the status (colored by its status category) and the summary,
+like fzfjira. Keys on the selected work item: `enter` assemble the work item
+as a Markdown document (metadata, description, comments, sub-tasks and links;
+ADF fields are converted with [`md`](https://github.com/ricoberger/md)) and
+open it in the configured editor, `o` open the work item in the web browser,
+`y` copy the key to the clipboard. `flagField` sets the custom field backing
+the "Flagged" marker (default `customfield_10002`).
 
 Panels keep their last data when a refresh fails and show the error in the header.

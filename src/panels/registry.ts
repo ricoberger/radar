@@ -18,6 +18,7 @@ import {
   validateGithubNotificationsParams,
 } from './GithubNotificationsPanel.js';
 import { GithubPrsPanel } from './GithubPrsPanel.js';
+import { JiraPanel, validateJiraParams } from './JiraPanel.js';
 import {
   RicobergerNotesPanel,
   ricobergerNotesTitle,
@@ -69,6 +70,11 @@ export const panelDefaults: Record<string, PanelTypeDefaults> = {
     interval: 300,
     validateParams: validateGithubNotificationsParams,
   },
+  jira: {
+    title: 'Jira',
+    interval: 300,
+    validateParams: validateJiraParams,
+  },
 };
 
 export const panelComponents: Record<string, ComponentType<PanelProps>> = {
@@ -79,4 +85,5 @@ export const panelComponents: Record<string, ComponentType<PanelProps>> = {
   'github-prs': GithubPrsPanel,
   'github-issues': GithubIssuesPanel,
   'github-notifications': GithubNotificationsPanel,
+  jira: JiraPanel,
 };

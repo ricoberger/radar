@@ -6,47 +6,40 @@ dashboards:
       direction: row
       children:
         - direction: column
-          children:
-            - panel: apple-calendar
-            - panel: ricoberger-notes
-              weight: 2
-              params:
-                dir: ~/Documents/GitHub/ricoberger/notes/daily
-        - direction: column
-          children:
-            - panel: github-prs
-              title: Created PRs
-              params:
-                query: 'author:@me is:open'
-            - panel: github-prs
-              title: PRs Review Requested
-              params:
-                query: 'review-requested:@me is:open'
-            - panel: github-notifications
-        - direction: column
+          weight: 3
           children:
             - panel: alertmanager
               params:
                 filter: team-core
-            - panel: apple-mail
-  - name: Week
-    layout:
-      direction: row
-      children:
-        - panel: apple-calendar
-          params:
-            view: week
+        - direction: column
+          weight: 2
+          children:
+            - panel: jira
+              params:
+                jql:
+                  project = CORE AND assignee = currentUser() AND statusCategory
+                  != Done AND status != Backlog ORDER BY priority DESC, updated
+                  DESC
+            - panel: github-notifications
+              weight: 3
+            - panel: github-prs
+              weight: 2
+              title: Created
+              params:
+                query: 'archived:false is:open author:@me'
+            - panel: github-prs
+              weight: 2
+              title: Review Requested
+              params:
+                query: 'archived:false is:open review-requested:@me'
         - direction: column
           children:
             - panel: apple-calendar
               params:
                 view: day
-                day: yesterday
-            - panel: apple-calendar
-              params:
-                view: day
                 day: today
-            - panel: apple-calendar
+            - panel: ricoberger-notes
+              weight: 2
               params:
-                view: day
-                day: tomorrow
+                dir: ~/Documents/GitHub/ricoberger/notes/daily
+            - panel: apple-mail
