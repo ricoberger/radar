@@ -1,0 +1,29 @@
+# Default config used by `npm run dev`. Copy to ~/.config/radar/config.yaml
+# and adjust — see README.md for the full schema.
+dashboards:
+  - name: Dashboard
+    layout:
+      direction: row
+      children:
+        - direction: column
+          children:
+            - panel: calendar
+            - panel: note
+              weight: 2
+        - direction: column
+          children:
+            - panel: github-prs
+              title: Created PRs
+              params:
+                query: 'author:@me is:open'
+            - panel: github-prs
+              title: PRs Review Requested
+              params:
+                query: 'review-requested:@me is:open'
+            - panel: github-notifications
+        - direction: column
+          children:
+            - panel: alerts
+              params:
+                filter: team-core
+            - panel: mail
