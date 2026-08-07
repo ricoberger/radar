@@ -37,6 +37,7 @@ function validateLayout(node: LayoutNode, trail: string): void {
         `${trail}: unknown panel type "${node.panel}" (available: ${Object.keys(panelDefaults).join(', ')})`,
       );
     }
+    panelDefaults[node.panel].validateParams?.(node.params ?? {}, trail);
     return;
   }
   if (!Array.isArray(node.children) || node.children.length === 0) {
@@ -104,7 +105,10 @@ export function flattenPanels(
       id: `d${dashboardIndex}:p${index}:${node.panel}`,
       type: node.panel,
       index,
-      title: node.title ?? defaultsForType.title,
+      title:
+        node.title ??
+        defaultsForType.deriveTitle?.(node.params ?? {}) ??
+        defaultsForType.title,
       interval: node.interval ?? defaultsForType.interval,
       params: node.params ?? {},
     });

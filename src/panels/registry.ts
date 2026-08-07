@@ -2,17 +2,30 @@ import { ComponentType } from 'react';
 
 import { PanelProps } from '../types.js';
 import { AlertsPanel } from './AlertsPanel.js';
-import { CalendarPanel } from './CalendarPanel.js';
+import {
+  AppleCalendarPanel,
+  appleCalendarTitle,
+  validateAppleCalendarParams,
+} from './AppleCalendarPanel.js';
 import { GithubNotificationsPanel } from './GithubNotificationsPanel.js';
 import { GithubPrsPanel } from './GithubPrsPanel.js';
 import { MailPanel } from './MailPanel.js';
 import { NotePanel } from './NotePanel.js';
 
-export const panelDefaults: Record<
-  string,
-  { title: string; interval: number }
-> = {
-  calendar: { title: 'Calendar', interval: 300 },
+export interface PanelTypeDefaults {
+  title: string;
+  interval: number;
+  deriveTitle?: (params: Record<string, unknown>) => string;
+  validateParams?: (params: Record<string, unknown>, trail: string) => void;
+}
+
+export const panelDefaults: Record<string, PanelTypeDefaults> = {
+  'apple-calendar': {
+    title: 'Calendar',
+    interval: 300,
+    deriveTitle: appleCalendarTitle,
+    validateParams: validateAppleCalendarParams,
+  },
   note: { title: 'Daily Note', interval: 5 },
   mail: { title: 'Mail', interval: 60 },
   alerts: { title: 'Alerts', interval: 60 },
@@ -21,7 +34,7 @@ export const panelDefaults: Record<
 };
 
 export const panelComponents: Record<string, ComponentType<PanelProps>> = {
-  calendar: CalendarPanel,
+  'apple-calendar': AppleCalendarPanel,
   note: NotePanel,
   mail: MailPanel,
   alerts: AlertsPanel,

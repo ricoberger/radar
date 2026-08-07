@@ -51,8 +51,8 @@ src/
     useScreenSize.ts
   panels/       One file per panel type; each contains BOTH data fetching and
                 rendering. registry.ts maps panel type name → component
-swift/          calendar-helper.swift (EventKit); compiled by
-                scripts/build-calendar-helper.sh into gitignored bin/
+swift/          apple-calendar-helper.swift (EventKit); compiled by
+                scripts/build-apple-calendar-helper.sh into gitignored bin/
 ```
 
 Key design decisions:

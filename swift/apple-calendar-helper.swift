@@ -1,8 +1,10 @@
 import EventKit
 import Foundation
 
-// calendar-helper - prints today's Apple Calendar events as JSON to stdout.
-// Compiled by scripts/build-calendar-helper.sh into bin/calendar-helper.
+// apple-calendar-helper [start] [end] - prints Apple Calendar events between the
+// two dates (YYYY-MM-DD, local time, end exclusive) as JSON to stdout.
+// Defaults to today. Compiled by scripts/build-apple-calendar-helper.sh into
+// bin/apple-calendar-helper.
 
 struct Event: Codable {
     let title: String
@@ -36,8 +38,21 @@ guard granted else {
 }
 
 let calendar = Calendar.current
-let start = calendar.startOfDay(for: Date())
-let end = calendar.date(byAdding: .day, value: 1, to: start)!
+
+func parseDay(_ argument: String) -> Date {
+    let dayFormatter = DateFormatter()
+    dayFormatter.dateFormat = "yyyy-MM-dd"
+    dayFormatter.timeZone = TimeZone.current
+    guard let date = dayFormatter.date(from: argument) else {
+        FileHandle.standardError.write(Data("Invalid date \"\(argument)\", expected YYYY-MM-DD.\n".utf8))
+        exit(1)
+    }
+    return calendar.startOfDay(for: date)
+}
+
+let arguments = CommandLine.arguments
+let start = arguments.count > 1 ? parseDay(arguments[1]) : calendar.startOfDay(for: Date())
+let end = arguments.count > 2 ? parseDay(arguments[2]) : calendar.date(byAdding: .day, value: 1, to: start)!
 let predicate = store.predicateForEvents(withStart: start, end: end, calendars: nil)
 let events = store.events(matching: predicate).sorted { $0.startDate < $1.startDate }
 

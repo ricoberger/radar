@@ -7,7 +7,7 @@ dashboards:
       children:
         - direction: column
           children:
-            - panel: calendar
+            - panel: apple-calendar
             - panel: note
               weight: 2
         - direction: column
@@ -27,3 +27,24 @@ dashboards:
               params:
                 filter: team-core
             - panel: mail
+  - name: Week
+    layout:
+      direction: row
+      children:
+        - panel: apple-calendar
+          params:
+            view: week
+        - direction: column
+          children:
+            - panel: apple-calendar
+              params:
+                view: day
+                day: yesterday
+            - panel: apple-calendar
+              params:
+                view: day
+                day: today
+            - panel: apple-calendar
+              params:
+                view: day
+                day: tomorrow
