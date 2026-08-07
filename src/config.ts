@@ -14,7 +14,6 @@ const DEFAULT_CONFIG_PATH = path.join(
 );
 
 const defaults: Omit<Config, 'dashboards'> = {
-  alertmanagerUrl: 'http://127.0.0.1:9093',
   editor: process.env.EDITOR || 'vim',
 };
 

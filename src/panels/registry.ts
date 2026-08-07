@@ -1,7 +1,10 @@
 import { ComponentType } from 'react';
 
 import { PanelProps } from '../types.js';
-import { AlertsPanel } from './AlertsPanel.js';
+import {
+  AlertmanagerPanel,
+  validateAlertmanagerParams,
+} from './AlertmanagerPanel.js';
 import {
   AppleCalendarPanel,
   appleCalendarTitle,
@@ -41,7 +44,11 @@ export const panelDefaults: Record<string, PanelTypeDefaults> = {
     interval: 300,
     validateParams: validateAppleMailParams,
   },
-  alerts: { title: 'Alerts', interval: 60 },
+  alertmanager: {
+    title: 'Alerts',
+    interval: 60,
+    validateParams: validateAlertmanagerParams,
+  },
   'github-prs': { title: 'Pull Requests', interval: 120 },
   'github-notifications': { title: 'GitHub Notifications', interval: 120 },
 };
@@ -50,7 +57,7 @@ export const panelComponents: Record<string, ComponentType<PanelProps>> = {
   'apple-calendar': AppleCalendarPanel,
   'ricoberger-notes': RicobergerNotesPanel,
   'apple-mail': AppleMailPanel,
-  alerts: AlertsPanel,
+  alertmanager: AlertmanagerPanel,
   'github-prs': GithubPrsPanel,
   'github-notifications': GithubNotificationsPanel,
 };

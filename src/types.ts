@@ -24,7 +24,6 @@ export interface Dashboard {
 }
 
 export interface Config {
-  alertmanagerUrl: string;
   editor: string;
   dashboards: Dashboard[];
 }

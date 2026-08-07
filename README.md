@@ -37,7 +37,7 @@ grant your terminal access to your calendars.
 | `tab`/`shift-tab` | cycle focus                                   |
 | `j`/`k`           | select item / scroll                          |
 | `g`/`G`           | first / last item                             |
-| `enter`           | open item in native app / edit the daily note |
+| `enter`           | open / view item, edit the daily note         |
 | `z`               | zoom focused panel                            |
 | `r`/`R`           | refresh focused / all panels                  |
 | `?`               | help                                          |
@@ -51,7 +51,6 @@ from the first of: the path given as argument (`radar <config.yaml>`), the
 `dashboards` is required, the remaining keys have defaults:
 
 ```yaml
-alertmanagerUrl: http://127.0.0.1:9093
 editor: nvim # defaults to $EDITOR
 
 dashboards:
@@ -70,7 +69,7 @@ dashboards:
                   params:
                     dir: ~/Documents/GitHub/ricoberger/notes/daily
             - weight: 1
-              panel: alerts
+              panel: alertmanager
               interval: 30
               params:
                 filter: team-core
@@ -114,7 +113,7 @@ A layout node is either a split (`direction` + `children`) or a panel. Every nod
 | `apple-calendar`       | `day`, `view`                             | Events from all Apple calendars            |
 | `ricoberger-notes`     | `dir` (required), `day`                   | A daily note, rendered with `md`           |
 | `apple-mail`           | `messages`, `limit`, `include`, `exclude` | Messages from the Mail.app inboxes         |
-| `alerts`               | `filter` (name)                           | Alerts from an Alertmanager.app filter     |
+| `alertmanager`         | `url`, `filter` / `alertmanager`          | Alerts from Alertmanager.app               |
 | `github-prs`           | `query`, `limit` (20)                     | Pull requests from a `gh search prs` query |
 | `github-notifications` | `limit` (50)                              | Unread GitHub notifications                |
 
@@ -137,5 +136,17 @@ inboxes of all accounts as `sender · subject · age · account`. `messages` sel
 `unread` (default) or `all`. `include` / `exclude` are lists of account names (as
 shown in Mail.app) to fetch from; if both are set they are ignored and all accounts
 are fetched.
+
+The alertmanager panel shows the alerts of one
+[Alertmanager.app](https://github.com/ricoberger/Alertmanager) filter or
+alertmanager: exactly one of `filter` / `alertmanager` (the name as shown in
+the app) is required. `url` sets the API base URL (default
+`http://127.0.0.1:9093`). Each row shows the analysis state (green = analysis
+exists, yellow = running), severity, name, summary, age and alertmanager;
+suppressed alerts are dimmed. Keys on the selected alert: `enter` view the
+alert Markdown in the editor, `o`/`s`/`b`/`d`/`p` open the source / silence /
+runbook / dashboard / panel link in the browser (ignored when the alert has no
+such link), `a` open the finished analysis in the editor or start a new run,
+`y` copy the source URL to the clipboard.
 
 Panels keep their last data when a refresh fails and show the error in the header.

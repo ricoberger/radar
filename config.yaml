@@ -25,7 +25,7 @@ dashboards:
             - panel: github-notifications
         - direction: column
           children:
-            - panel: alerts
+            - panel: alertmanager
               params:
                 filter: team-core
             - panel: apple-mail
