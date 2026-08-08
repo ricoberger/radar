@@ -7,8 +7,8 @@ Guidance for AI agents working on this repository.
 radar is a personal TUI dashboard for macOS built with
 [Ink](https://github.com/vadimdemedes/ink) (React for terminals). It renders
 configurable dashboards with panels for Apple Calendar, Apple Mail, a daily
-note, Alertmanager alerts, GitHub pull requests / issues / notifications and
-Jira work items.
+note, Alertmanager alerts, GitHub pull requests / issues / notifications,
+Jira work items and Kubernetes issues.
 
 - Runtime: Node.js >= 20, ESM only (`"type": "module"`), macOS only.
 - Language: TypeScript with `NodeNext` module resolution — relative imports
@@ -66,7 +66,8 @@ Key design decisions:
 - One key handler per panel id (keyRegistry). Global keys are handled in
   app.tsx first; unhandled keys go to the focused panel.
 - External data comes from CLIs / local APIs: `gh` (GitHub search),
-  `gh-notifications` (GitHub inbox), `acli` (Jira), AppleScript via
+  `gh-notifications` (GitHub inbox), `acli` (Jira), `kubectl issues`
+  (Kubernetes), AppleScript via
   `osascript` (Mail), the compiled Swift helper (Calendar), HTTP on
   `127.0.0.1:9093` (Alertmanager.app), the filesystem (daily note).
 

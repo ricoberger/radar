@@ -9,8 +9,27 @@ dashboards:
           weight: 3
           children:
             - panel: alertmanager
+              title: Alerts (incident.io)
+              params:
+                filter: team-core (incident.io)
+            - panel: alertmanager
+              weight: 3
               params:
                 filter: team-core
+            - panel: kubectl-issues
+              weight: 3
+              params:
+                command: pods
+                contexts:
+                  - prod-de1
+                  - prod-us1
+                  - prod-au1
+                  - prod-ae1
+                  - prod-core
+                  - stage-de1
+                  - dev-de1
+                args:
+                  - --all-namespaces
         - direction: column
           weight: 2
           children:

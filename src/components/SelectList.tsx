@@ -13,6 +13,8 @@ interface SelectListProps<T> {
   items: T[];
   selected: number;
   renderItem: (item: T, selected: boolean) => ReactNode;
+  // Lines of the panel content taken by fixed elements above the list.
+  reserve?: number;
 }
 
 // Renders a window of items around the selection, sized by the measured
@@ -21,9 +23,10 @@ export function SelectList<T>({
   items,
   selected,
   renderItem,
+  reserve = 0,
 }: SelectListProps<T>) {
   const height = useContentHeight();
-  const visible = Math.max(1, height);
+  const visible = Math.max(1, height - reserve);
 
   let start = 0;
   if (items.length > visible) {

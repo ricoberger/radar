@@ -20,6 +20,10 @@ import {
 import { GithubPrsPanel } from './GithubPrsPanel.js';
 import { JiraPanel, validateJiraParams } from './JiraPanel.js';
 import {
+  KubectlIssuesPanel,
+  validateKubectlIssuesParams,
+} from './KubectlIssuesPanel.js';
+import {
   RicobergerNotesPanel,
   ricobergerNotesTitle,
   validateRicobergerNotesParams,
@@ -75,6 +79,11 @@ export const panelDefaults: Record<string, PanelTypeDefaults> = {
     interval: 300,
     validateParams: validateJiraParams,
   },
+  'kubectl-issues': {
+    title: 'Kubernetes Issues',
+    interval: 60,
+    validateParams: validateKubectlIssuesParams,
+  },
 };
 
 export const panelComponents: Record<string, ComponentType<PanelProps>> = {
@@ -86,4 +95,5 @@ export const panelComponents: Record<string, ComponentType<PanelProps>> = {
   'github-issues': GithubIssuesPanel,
   'github-notifications': GithubNotificationsPanel,
   jira: JiraPanel,
+  'kubectl-issues': KubectlIssuesPanel,
 };
