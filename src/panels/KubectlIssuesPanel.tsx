@@ -2,6 +2,7 @@ import { Box, Text } from 'ink';
 
 import { PanelFrame } from '../components/PanelFrame.js';
 import { SelectionMarker, SelectList } from '../components/SelectList.js';
+import { demoKubectlIssues, isDemoMode } from '../demo.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
 import { PanelProps } from '../types.js';
@@ -54,6 +55,7 @@ export function validateKubectlIssuesParams(
 }
 
 async function fetchIssues(params: KubectlIssuesParams): Promise<Row[]> {
+  if (isDemoMode()) return demoKubectlIssues();
   const stdout = await run(
     'kubectl',
     [

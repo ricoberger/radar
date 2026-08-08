@@ -2,6 +2,7 @@ import { Text } from 'ink';
 
 import { PanelFrame } from '../components/PanelFrame.js';
 import { SelectionMarker, SelectList } from '../components/SelectList.js';
+import { demoMail, isDemoMode } from '../demo.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
 import { PanelProps } from '../types.js';
@@ -105,6 +106,7 @@ function run() {
 export async function fetchMail(
   params: AppleMailParams,
 ): Promise<MailMessage[]> {
+  if (isDemoMode()) return demoMail();
   const stdout = await run(
     'osascript',
     ['-l', 'JavaScript', '-e', buildScript(params)],

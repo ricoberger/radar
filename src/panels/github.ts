@@ -1,3 +1,4 @@
+import { demoGithubSearch, isDemoMode } from '../demo.js';
 import { openExternal, run } from '../utils.js';
 
 // Shared helpers for the github-prs, github-issues and github-notifications
@@ -84,6 +85,7 @@ export async function searchGithub(
   query: string,
   limit: number,
 ): Promise<SearchItem[]> {
+  if (isDemoMode()) return demoGithubSearch(kind);
   const fields = [
     'number',
     'title',

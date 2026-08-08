@@ -4,11 +4,19 @@ import { spawnSync } from 'node:child_process';
 
 import { App } from './app.js';
 import { loadConfig } from './config.js';
+import { demoConfig, enableDemoMode } from './demo.js';
 import { Config } from './types.js';
+
+const args = process.argv.slice(2);
 
 let config: Config;
 try {
-  config = loadConfig(process.argv[2]);
+  if (args.includes('--demo')) {
+    enableDemoMode();
+    config = demoConfig;
+  } else {
+    config = loadConfig(args[0]);
+  }
 } catch (error) {
   console.error((error as Error).message);
   process.exit(1);

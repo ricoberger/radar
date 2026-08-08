@@ -6,6 +6,7 @@ import path from 'node:path';
 import { PanelFrame } from '../components/PanelFrame.js';
 import { SelectionMarker, SelectList } from '../components/SelectList.js';
 import { useAppContext } from '../context.js';
+import { demoJira, isDemoMode } from '../demo.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
 import { PanelProps } from '../types.js';
@@ -129,6 +130,7 @@ function clean(s: string | undefined): string {
 }
 
 async function fetchWorkItems(params: JiraParams): Promise<WorkItem[]> {
+  if (isDemoMode()) return demoJira();
   const stdout = await run(
     'acli',
     [

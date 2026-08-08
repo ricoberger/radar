@@ -6,6 +6,7 @@ import path from 'node:path';
 import { PanelFrame } from '../components/PanelFrame.js';
 import { SelectionMarker, SelectList } from '../components/SelectList.js';
 import { useAppContext } from '../context.js';
+import { demoAlerts, isDemoMode } from '../demo.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
 import { PanelProps } from '../types.js';
@@ -108,6 +109,7 @@ async function alertsPath(params: AlertmanagerParams): Promise<string> {
 export async function fetchAlerts(
   params: AlertmanagerParams,
 ): Promise<Alert[]> {
+  if (isDemoMode()) return demoAlerts();
   const alerts = await getJson<ApiAlert[]>(
     `${params.url}${await alertsPath(params)}`,
   );

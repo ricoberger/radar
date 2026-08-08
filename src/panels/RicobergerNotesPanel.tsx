@@ -9,6 +9,7 @@ import {
   useContentWidth,
 } from '../components/PanelFrame.js';
 import { useAppContext } from '../context.js';
+import { demoNote, isDemoMode } from '../demo.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { usePanelKeys } from '../hooks/usePanelKeys.js';
 import { KeyInfo, useSessionState } from '../store.js';
@@ -79,6 +80,7 @@ function stripFrontmatter(content: string): string {
 
 export async function fetchDailyNote(params: NotesParams): Promise<DailyNote> {
   const p = notePath(params.dir, noteDate(params.day));
+  if (isDemoMode()) return { path: p, content: demoNote };
   if (!fs.existsSync(p)) {
     return { path: p, content: null };
   }

@@ -32,11 +32,14 @@ errors. Run `npm run format` before committing.
 
 ```
 src/
-  index.tsx     Entry point: loads config, alt-screen handling, renders <App/>
+  index.tsx     Entry point: loads config (or demo config with --demo),
+                alt-screen handling, renders <App/>
   app.tsx       Root component: dashboard tabs, global keymap, layout renderer,
                 help overlay, zoom, footer
   config.ts     Config loading/validation (YAML). Path: argv[2] → $RADAR_CONFIG
                 → ~/.config/radar/config.yaml. Missing config = error + exit 1
+  demo.ts       --demo mode: module-level flag, built-in demo config and fake
+                fixture data returned by every panel's fetch function
   types.ts      Config / layout / panel type definitions
   store.ts      Module-level session state: panel data cache, focus, key
                 registry. Survives remounts (e.g. editor suspend/resume)
@@ -93,7 +96,9 @@ tmux send-keys -t radar-test 'q'          # quit; also: kill-session
 Kill leftover sessions/processes before re-testing. Panels depend on the local
 machine (Mail, Calendar permissions, gh auth, Alertmanager.app); an error
 message inside a panel frame is expected when a backend is unavailable — the
-app itself must still render.
+app itself must still render. `node dist/index.js --demo` runs every panel
+with built-in fake data and no external dependencies (except `md` for the
+notes panel), which is useful for screenshots and layout checks.
 
 ## Conventions
 

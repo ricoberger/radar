@@ -5,6 +5,8 @@ your radar in one terminal: Apple Calendar events, Apple Mail unread messages, t
 note, Alertmanager.app alerts, GitHub pull requests / issues / notifications, Jira
 work items and Kubernetes issues in configurable dashboards.
 
+![Demo](.github/assets/demo.png)
+
 ## Requirements
 
 - Node.js >= 20 and `swiftc` (Xcode toolchain) for the calendar helper
@@ -49,7 +51,9 @@ grant your terminal access to your calendars.
 
 A config file is required — without one the application exits with an error. It is read
 from the first of: the path given as argument (`radar <config.yaml>`), the
-`RADAR_CONFIG` environment variable, or `~/.config/radar/config.yaml`. Only
+`RADAR_CONFIG` environment variable, or `~/.config/radar/config.yaml`. With
+`radar --demo` a built-in demo config showing every panel type with generic
+fake data is used instead — no external tools or accounts needed. Only
 `dashboards` is required, the remaining keys have defaults:
 
 ```yaml

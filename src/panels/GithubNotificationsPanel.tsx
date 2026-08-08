@@ -3,6 +3,7 @@ import { Text } from 'ink';
 import { PanelFrame } from '../components/PanelFrame.js';
 import { SelectionMarker, SelectList } from '../components/SelectList.js';
 import { useAppContext } from '../context.js';
+import { demoNotifications, isDemoMode } from '../demo.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
 import { PanelProps } from '../types.js';
@@ -53,6 +54,7 @@ interface ApiNotification {
 export async function fetchNotifications(
   limit: number,
 ): Promise<Notification[]> {
+  if (isDemoMode()) return demoNotifications();
   const stdout = await run('gh-notifications', ['list'], 30000);
   return (JSON.parse(stdout) as ApiNotification[])
     .slice(0, limit)

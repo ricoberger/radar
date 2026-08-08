@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { PanelFrame } from '../components/PanelFrame.js';
 import { SelectionMarker, SelectList } from '../components/SelectList.js';
+import { demoCalendarEvents, isDemoMode } from '../demo.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
 import { PanelProps } from '../types.js';
@@ -97,6 +98,7 @@ function viewDays(params: CalendarParams): Date[] {
 export async function fetchCalendarEvents(
   days: Date[],
 ): Promise<CalendarEvent[]> {
+  if (isDemoMode()) return demoCalendarEvents(days);
   const start = days[0];
   const end = addDays(days[days.length - 1], 1);
   const stdout = await run(
