@@ -6,6 +6,7 @@ import { AppContext } from './context.js';
 import { useScreenSize } from './hooks/useScreenSize.js';
 import { panelComponents } from './panels/registry.js';
 import { keyRegistry, refreshRegistry, useSessionState } from './store.js';
+import { MAUVE } from './theme.js';
 import { Config, FlatPanel, isPanelNode, LayoutNode } from './types.js';
 
 interface AppProps {
@@ -184,7 +185,7 @@ export function App({ config, runExternal, onQuit }: AppProps) {
               <Text
                 key={`${i}:${d.name}`}
                 bold={i === active}
-                color={i === active ? 'cyan' : undefined}
+                color={i === active ? MAUVE : undefined}
                 dimColor={i !== active}
               >
                 {d.name}
@@ -197,11 +198,11 @@ export function App({ config, runExternal, onQuit }: AppProps) {
             flexDirection="column"
             flexGrow={1}
             borderStyle="round"
-            borderColor="cyan"
+            borderColor={MAUVE}
             paddingX={2}
             paddingY={1}
           >
-            <Text bold color="cyan">
+            <Text bold color={MAUVE}>
               Help
             </Text>
             <Text> </Text>

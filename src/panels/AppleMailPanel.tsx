@@ -1,7 +1,7 @@
 import { Text } from 'ink';
 
 import { PanelFrame } from '../components/PanelFrame.js';
-import { SelectList } from '../components/SelectList.js';
+import { SelectionMarker, SelectList } from '../components/SelectList.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
 import { PanelProps } from '../types.js';
@@ -168,7 +168,7 @@ export function AppleMailPanel({
           selected={focused ? selected : -1}
           renderItem={(message, isSelected) => (
             <Text wrap="truncate" bold={isSelected}>
-              {isSelected ? '❯ ' : '  '}
+              <SelectionMarker selected={isSelected} />
               <Text color="yellow">{senderName(message.sender)}</Text>
               <Text dimColor> · </Text>
               {message.subject}

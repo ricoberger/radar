@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { PanelFrame } from '../components/PanelFrame.js';
-import { SelectList } from '../components/SelectList.js';
+import { SelectionMarker, SelectList } from '../components/SelectList.js';
 import { useAppContext } from '../context.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
@@ -352,7 +352,7 @@ export function JiraPanel({
           selected={focused ? selected : -1}
           renderItem={(item, isSelected) => (
             <Text wrap="truncate" bold={isSelected}>
-              {isSelected ? '❯ ' : '  '}
+              <SelectionMarker selected={isSelected} />
               {pad(item.key, 12)}{' '}
               <Text color={item.statusColor}>{pad(item.status, 14)}</Text>{' '}
               {item.summary}

@@ -1,7 +1,13 @@
-import { Box } from 'ink';
+import { Box, Text } from 'ink';
 import type { ReactNode } from 'react';
 
+import { MAUVE } from '../theme.js';
 import { useContentHeight } from './PanelFrame.js';
+
+// The fzf-style pointer marking the selected row.
+export function SelectionMarker({ selected }: { selected: boolean }) {
+  return <Text color={MAUVE}>{selected ? '▌ ' : '  '}</Text>;
+}
 
 interface SelectListProps<T> {
   items: T[];

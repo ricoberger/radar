@@ -1,7 +1,7 @@
 import { Text } from 'ink';
 
 import { PanelFrame } from '../components/PanelFrame.js';
-import { SelectList } from '../components/SelectList.js';
+import { SelectionMarker, SelectList } from '../components/SelectList.js';
 import { useAppContext } from '../context.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
@@ -55,7 +55,7 @@ export function GithubPrsPanel({
           selected={focused ? selected : -1}
           renderItem={(pr, isSelected) => (
             <Text wrap="truncate" bold={isSelected}>
-              {isSelected ? '❯ ' : '  '}
+              <SelectionMarker selected={isSelected} />
               <Text color={searchItemColor(pr)}>{ICON_PR}</Text> [#{pr.number}]{' '}
               {pr.repository}: {pr.title}
               {'  '}({pr.author} · {reltime(pr.createdAt)})

@@ -125,7 +125,7 @@ The apple-calendar panel shows a single day by default: `day` selects `yesterday
 today highlighted, multi-day events repeated under every day they cover) and `day` is
 ignored. The default title reflects the configuration (e.g. `Calendar · Tomorrow`,
 `Calendar · Week`); an explicit `title` always wins. Events that are currently
-running are shown in green.
+running are shown in blue.
 
 The ricoberger-notes panel shows a daily note from `dir` (layout
 `<dir>/YYYY/MM/YYYY-MM-DD.md`, created from `<dir>/template.md`): `day` selects

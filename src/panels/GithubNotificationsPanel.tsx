@@ -1,7 +1,7 @@
 import { Text } from 'ink';
 
 import { PanelFrame } from '../components/PanelFrame.js';
-import { SelectList } from '../components/SelectList.js';
+import { SelectionMarker, SelectList } from '../components/SelectList.js';
 import { useAppContext } from '../context.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
@@ -172,7 +172,7 @@ export function GithubNotificationsPanel({
             const { icon, color } = typeIcon(notification);
             return (
               <Text wrap="truncate" bold={isSelected}>
-                {isSelected ? '❯ ' : '  '}
+                <SelectionMarker selected={isSelected} />
                 <Text color={notification.isUnread ? 'yellow' : 'gray'}>
                   {notification.isUnread ? ICON_UNREAD : ICON_READ}
                 </Text>{' '}

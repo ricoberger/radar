@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 
+import { MAUVE } from '../theme.js';
 import { formatAge } from '../utils.js';
 
 const ContentHeightContext = createContext(0);
@@ -59,7 +60,7 @@ export function PanelFrame({
       flexDirection="column"
       flexGrow={1}
       borderStyle="round"
-      borderColor={focused ? 'cyan' : 'gray'}
+      borderColor={focused ? MAUVE : 'gray'}
       paddingX={1}
       overflow="hidden"
     >
@@ -70,9 +71,9 @@ export function PanelFrame({
         borderTop={false}
         borderLeft={false}
         borderRight={false}
-        borderColor={focused ? 'cyan' : 'gray'}
+        borderColor={focused ? MAUVE : 'gray'}
       >
-        <Text bold color={focused ? 'cyan' : undefined} wrap="truncate">
+        <Text bold color={focused ? MAUVE : undefined} wrap="truncate">
           {index} {title}
         </Text>
         <Box flexGrow={1} />

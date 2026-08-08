@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { PanelFrame } from '../components/PanelFrame.js';
-import { SelectList } from '../components/SelectList.js';
+import { SelectionMarker, SelectList } from '../components/SelectList.js';
 import { useAppContext } from '../context.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
@@ -260,7 +260,7 @@ export function AlertmanagerPanel({
               bold={isSelected}
               dimColor={alert.state === 'suppressed'}
             >
-              {isSelected ? '❯ ' : '  '}
+              <SelectionMarker selected={isSelected} />
               <Text color={analysisColor(alert)}>{ICON_ANALYZE} </Text>
               <Text color={severityColor(alert.severity)}>
                 {alert.severity.padEnd(9)}

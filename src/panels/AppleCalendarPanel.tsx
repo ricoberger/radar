@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { PanelFrame } from '../components/PanelFrame.js';
-import { SelectList } from '../components/SelectList.js';
+import { SelectionMarker, SelectList } from '../components/SelectList.js';
 import { usePanelData } from '../hooks/usePanelData.js';
 import { useListNavigation } from '../hooks/usePanelKeys.js';
 import { PanelProps } from '../types.js';
@@ -160,7 +160,7 @@ function eventColor(event: CalendarEvent, day: Date): { color?: string } {
   const now = Date.now();
   const start = new Date(event.start).getTime();
   const end = new Date(event.end).getTime();
-  if (start <= now && now <= end) return { color: 'green' };
+  if (start <= now && now <= end) return { color: 'blue' };
   return {};
 }
 
@@ -222,7 +222,7 @@ export function AppleCalendarPanel({
               return (
                 <Text
                   bold
-                  color={sameDay(row.day, new Date()) ? 'cyan' : undefined}
+                  color={sameDay(row.day, new Date()) ? 'blue' : undefined}
                   wrap="truncate"
                 >
                   {dayHeading(row.day)}
@@ -235,7 +235,7 @@ export function AppleCalendarPanel({
                 bold={isSelected}
                 {...eventColor(row.event, row.day)}
               >
-                {isSelected ? '❯ ' : '  '}
+                <SelectionMarker selected={isSelected} />
                 {timeLabel(row.event, row.day).padEnd(14)}
                 {row.event.title}
                 <Text dimColor> · {row.event.calendar}</Text>
