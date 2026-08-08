@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "tsc && ./scripts/build-apple-calendar-helper.sh",
-    "dev": "npm run build && node dist/index.js config.yaml",
+    "dev": "npm run build && node dist/index.js --config config.yaml",
     "format": "prettier --write .",
     "postinstall": "./scripts/build-apple-calendar-helper.sh",
     "prepublishOnly": "npm run build"

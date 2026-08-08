@@ -36,7 +36,7 @@ src/
                 alt-screen handling, renders <App/>
   app.tsx       Root component: dashboard tabs, global keymap, layout renderer,
                 help overlay, zoom, footer
-  config.ts     Config loading/validation (YAML). Path: argv[2] → $RADAR_CONFIG
+  config.ts     Config loading/validation (YAML). Path: --config → $RADAR_CONFIG
                 → ~/.config/radar/config.yaml. Missing config = error + exit 1
   demo.ts       --demo mode: module-level flag, built-in demo config and fake
                 fixture data returned by every panel's fetch function
@@ -87,7 +87,7 @@ changing config semantics, update `config.ts` validation, `types.ts`,
 Run the TUI in tmux and inspect the output:
 
 ```sh
-tmux new-session -d -s radar-test -x 200 -y 50 'node dist/index.js config.yaml'
+tmux new-session -d -s radar-test -x 200 -y 50 'node dist/index.js --config config.yaml'
 sleep 3
 tmux capture-pane -t radar-test -p        # add -e to keep colors
 tmux send-keys -t radar-test 'q'          # quit; also: kill-session

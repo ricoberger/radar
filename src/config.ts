@@ -48,7 +48,7 @@ export function loadConfig(argPath?: string): Config {
   const configPath = argPath ?? process.env.RADAR_CONFIG ?? DEFAULT_CONFIG_PATH;
   if (!fs.existsSync(configPath)) {
     throw new Error(
-      `No config file found at ${configPath}.\nCreate it or pass a path: radar <config.yaml>`,
+      `No config file found at ${configPath}.\nCreate it or pass a path: radar --config <config.yaml>`,
     );
   }
 

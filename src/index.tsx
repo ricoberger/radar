@@ -11,11 +11,25 @@ const args = process.argv.slice(2);
 
 let config: Config;
 try {
-  if (args.includes('--demo')) {
+  let configPath: string | undefined;
+  let demo = false;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--demo') {
+      demo = true;
+    } else if (args[i] === '--config') {
+      configPath = args[++i];
+      if (!configPath) throw new Error('Missing value for --config.');
+    } else {
+      throw new Error(
+        `Unknown argument: ${args[i]}.\nUsage: radar [--config <config.yaml>] [--demo]`,
+      );
+    }
+  }
+  if (demo) {
     enableDemoMode();
     config = demoConfig;
   } else {
-    config = loadConfig(args[0]);
+    config = loadConfig(configPath);
   }
 } catch (error) {
   console.error((error as Error).message);

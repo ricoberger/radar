@@ -50,7 +50,7 @@ grant your terminal access to your calendars.
 ## Configuration
 
 A config file is required — without one the application exits with an error. It is read
-from the first of: the path given as argument (`radar <config.yaml>`), the
+from the first of: the `--config <config.yaml>` flag, the
 `RADAR_CONFIG` environment variable, or `~/.config/radar/config.yaml`. With
 `radar --demo` a built-in demo config showing every panel type with generic
 fake data is used instead — no external tools or accounts needed. Only
