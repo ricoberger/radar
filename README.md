@@ -11,6 +11,9 @@ work items and Kubernetes issues in configurable dashboards.
 ## Install
 
 ```sh
+npm install -g @ricoberger/radar
+
+# Or install from source
 npm install
 npm link
 mkdir -p ~/.config/radar && cp config.yaml ~/.config/radar/config.yaml
