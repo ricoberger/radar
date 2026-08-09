@@ -36,7 +36,6 @@ triggers a macOS prompt to grant your terminal access to your calendars.
 | `enter`           | open / view item, edit the daily note |
 | `z`               | zoom focused panel                    |
 | `r`/`R`           | refresh focused / all panels          |
-| `?`               | help                                  |
 | `q`               | quit                                  |
 
 ## Configuration

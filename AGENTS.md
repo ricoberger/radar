@@ -35,7 +35,7 @@ src/
   index.tsx     Entry point: loads config (or demo config with --demo),
                 alt-screen handling, renders <App/>
   app.tsx       Root component: dashboard tabs, global keymap, layout renderer,
-                help overlay, zoom, footer
+                zoom, footer
   config.ts     Config loading/validation (YAML). Path: --config → $RADAR_CONFIG
                 → ~/.config/radar/config.yaml. Missing config = error + exit 1
   demo.ts       --demo mode: module-level flag, built-in demo config and fake

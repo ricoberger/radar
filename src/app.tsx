@@ -59,20 +59,6 @@ function renderNode(
   );
 }
 
-const helpEntries: Array<[string, string]> = [
-  ['[ / ]', 'previous / next dashboard'],
-  ['1-9', 'focus panel'],
-  ['tab / shift-tab', 'cycle focus'],
-  ['j / k', 'select item / scroll'],
-  ['g / G', 'first / last item'],
-  ['enter', 'open item in native app'],
-  ['z', 'zoom focused panel'],
-  ['r', 'refresh focused panel'],
-  ['R', 'refresh all panels'],
-  ['?', 'toggle help'],
-  ['q', 'quit'],
-];
-
 export function App({ config, runExternal, onQuit }: AppProps) {
   const { columns, rows } = useScreenSize();
   const dashboards = config.dashboards;
@@ -87,7 +73,6 @@ export function App({ config, runExternal, onQuit }: AppProps) {
     {},
   );
   const [zoomed, setZoomed] = useSessionState('app:zoomed', false);
-  const [helpOpen, setHelpOpen] = useSessionState('app:help', false);
 
   const focusedIndex = Math.min(focusMap[active] ?? 1, panels.length);
   const focusedPanel = panels[focusedIndex - 1] ?? panels[0];
@@ -108,16 +93,8 @@ export function App({ config, runExternal, onQuit }: AppProps) {
 
   useInput((input, key) => {
     const handleKey = (char: string) => {
-      if (helpOpen) {
-        setHelpOpen(false);
-        return;
-      }
       if (char === 'q' || (key.ctrl && char === 'c')) {
         onQuit();
-        return;
-      }
-      if (char === '?') {
-        setHelpOpen(true);
         return;
       }
       if (/^[1-9]$/.test(char)) {
@@ -193,29 +170,7 @@ export function App({ config, runExternal, onQuit }: AppProps) {
             ))}
           </Box>
         ) : null}
-        {helpOpen ? (
-          <Box
-            flexDirection="column"
-            flexGrow={1}
-            borderStyle="round"
-            borderColor={MAUVE}
-            paddingX={2}
-            paddingY={1}
-          >
-            <Text bold color={MAUVE}>
-              Help
-            </Text>
-            <Text> </Text>
-            {helpEntries.map(([keys, description]) => (
-              <Text key={keys}>
-                <Text color="yellow">{keys.padEnd(18)}</Text>
-                {description}
-              </Text>
-            ))}
-            <Text> </Text>
-            <Text dimColor>press any key to close</Text>
-          </Box>
-        ) : zoomed ? (
+        {zoomed ? (
           <Box flexGrow={1}>
             <PanelHost panel={focusedPanel} focused />
           </Box>
@@ -232,7 +187,7 @@ export function App({ config, runExternal, onQuit }: AppProps) {
           <Text dimColor wrap="truncate">
             {dashboards.length > 1 ? '[/] dashboard · ' : ''}1-
             {Math.min(panels.length, 9)} focus · tab cycle · j/k select · enter
-            open · z zoom · r/R refresh · ? help · q quit
+            open · z zoom · r/R refresh · q quit
           </Text>
         </Box>
       </Box>
