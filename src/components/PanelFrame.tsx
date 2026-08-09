@@ -14,6 +14,20 @@ import { formatAge } from '../utils.js';
 const ContentHeightContext = createContext(0);
 const ContentWidthContext = createContext(0);
 
+// Re-renders on a 1s tick so the age keeps counting between fetches; setting
+// an unchanged string bails out of the re-render, so once the age is in the
+// minutes range the tick becomes effectively free.
+function Age({ lastUpdated }: { lastUpdated: number }) {
+  const [age, setAge] = useState(() => formatAge(new Date(lastUpdated)));
+  useEffect(() => {
+    const update = () => setAge(formatAge(new Date(lastUpdated)));
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, [lastUpdated]);
+  return <Text dimColor>{age}</Text>;
+}
+
 export function useContentHeight(): number {
   return useContext(ContentHeightContext);
 }
@@ -83,7 +97,7 @@ export function PanelFrame({
             ! {error}
           </Text>
         ) : lastUpdated ? (
-          <Text dimColor>{formatAge(new Date(lastUpdated))}</Text>
+          <Age lastUpdated={lastUpdated} />
         ) : null}
       </Box>
       <Box
