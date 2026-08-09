@@ -224,7 +224,7 @@ params and behavior match the github-prs panel.
 
 #### `github-notifications`
 
-The github-notifications panel lists all notifications, read and unread, from
+The `github-notifications` panel lists all notifications, read and unread, from
 the
 [gh-notifications](https://github.com/ricoberger/dotfiles/blob/main/.local/bin/gh-notifications)
 helper (`limit` defaults to `50`). `open` selects what enter does: `browser`
@@ -244,15 +244,16 @@ and issues in
 
 #### `jira`
 
-The jira panel lists the work items of a `jql` query (required, `limit` defaults
-to `50`) via [acli](https://developer.atlassian.com/cloud/acli/), in server
-order. Each row shows the key, the status (colored by its status category) and
-the summary, like fzfjira. Keys on the selected work item: `enter` assemble the
-work item as a Markdown document (metadata, description, comments, sub-tasks and
-links; ADF fields are converted with [`md`](https://github.com/ricoberger/md))
-and open it in the configured editor, `o` open the work item in the web browser,
-`y` copy the key to the clipboard. `flagField` sets the custom field backing the
-"Flagged" marker (default `customfield_10002`).
+The `jira` panel lists the work items of a `jql` query (required, `limit`
+defaults to `50`) via [acli](https://developer.atlassian.com/cloud/acli/), in
+server order. Each row shows the key, the status (colored by its status
+category) and the summary, like fzfjira. Keys on the selected work item: `enter`
+assemble the work item as a Markdown document (metadata, description, comments,
+sub-tasks and links; ADF fields are converted with
+[`md`](https://github.com/ricoberger/md)) and open it in the configured editor,
+`o` open the work item in the web browser, `y` copy the key to the clipboard.
+`flagField` sets the custom field backing the "Flagged" marker (default
+`customfield_10002`).
 
 ```yaml
 - panel: jira
@@ -266,7 +267,7 @@ and open it in the configured editor, `o` open the work item in the web browser,
 
 #### `kubectl-issues`
 
-The kubectl-issues panel runs
+The `kubectl-issues` panel runs
 `kubectl issues <command> [--context ...] [args ...] -o json` via the
 [kubectl-issues](https://github.com/ricoberger/kubectl-issues) plugin and
 renders the result as a table (dimmed header, columns like the CLI output).
