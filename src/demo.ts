@@ -34,7 +34,11 @@ export const demoConfig: Config = {
               { panel: 'alertmanager', params: { filter: 'all' } },
               {
                 panel: 'kubectl-issues',
-                params: { command: 'pods', args: ['-A'] },
+                params: {
+                  command: 'pods',
+                  contexts: ['prod-eu1', 'stage-eu1', 'dev-eu1'],
+                  args: ['-A'],
+                },
               },
             ],
           },

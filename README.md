@@ -1,20 +1,12 @@
 # radar
 
-Personal TUI radar built with [Ink](https://github.com/vadimdemedes/ink) — everything on
-your radar in one terminal: Apple Calendar events, Apple Mail unread messages, the daily
-note, Alertmanager.app alerts, GitHub pull requests / issues / notifications, Jira
+Personal AI generated TUI radar built with
+[Ink](https://github.com/vadimdemedes/ink) — everything on your radar in one
+terminal: Apple Calendar events, Apple Mail messages, the daily note,
+Alertmanager.app alerts, GitHub pull requests / issues / notifications, Jira
 work items and Kubernetes issues in configurable dashboards.
 
 ![Demo](.github/assets/demo.png)
-
-## Requirements
-
-- Node.js >= 20 and `swiftc` (Xcode toolchain) for the calendar helper
-- `gh` (authenticated) for the GitHub panels; `gh-notifications` for the notifications panel
-- [Alertmanager.app](https://github.com/ricoberger/Alertmanager) running for the alerts panel
-- `acli` (authenticated via `acli jira auth login --web`) for the jira panel
-- [kubectl-issues](https://github.com/ricoberger/kubectl-issues) for the kubectl-issues panel
-- Mail.app running for the mail panel
 
 ## Install
 
@@ -25,12 +17,12 @@ mkdir -p ~/.config/radar && cp config.yaml ~/.config/radar/config.yaml
 radar
 ```
 
-To try it without linking, run `npm run dev` — it uses the `config.yaml` from this
-repository.
+To try it without linking, run `npm run dev` — it uses the `config.yaml` from
+this repository.
 
-The build compiles the TypeScript sources to `dist/` and the Swift EventKit helper to
-`bin/apple-calendar-helper`. The first run of the apple-calendar panel triggers a macOS prompt to
-grant your terminal access to your calendars.
+The build compiles the TypeScript sources to `dist/` and the Swift EventKit
+helper to `bin/apple-calendar-helper`. The first run of the apple-calendar panel
+triggers a macOS prompt to grant your terminal access to your calendars.
 
 ## Keybindings
 
@@ -49,141 +41,247 @@ grant your terminal access to your calendars.
 
 ## Configuration
 
-A config file is required — without one the application exits with an error. It is read
-from the first of: the `--config <config.yaml>` flag, the
-`RADAR_CONFIG` environment variable, or `~/.config/radar/config.yaml`. With
-`radar --demo` a built-in demo config showing every panel type with generic
-fake data is used instead — no external tools or accounts needed. Only
-`dashboards` is required, the remaining keys have defaults:
+A config file is required — without one the application exits with an error. It
+is read from the first of: the `--config <config.yaml>` flag, the `RADAR_CONFIG`
+environment variable, or `~/.config/radar/config.yaml`. With `radar --demo` a
+built-in demo config showing every panel type with generic fake data is used
+instead — no external tools or accounts needed. Only `dashboards` is required,
+the remaining keys have defaults:
 
 ```yaml
-editor: nvim # defaults to $EDITOR
+# The editor which is used when a panel supports opening data in an editor.
+# Defaults to the $EDITOR environment variable.
+editor: nvim
 
+# A list of dashboards, each with a name and a layout. The layout is a tree of
+# rows and columns, each with a weight (flex ratio, default 1) and children.
+# Each leaf node is a panel with a type, an optional title, an optional refresh
+# interval (in seconds) and optional type-specific params.
 dashboards:
-  - name: Main
+  - name: Demo
     layout:
       direction: row
       children:
-        - weight: 3
-          direction: column
+        - direction: column
+          weight: 2
           children:
-            - weight: 3
-              direction: row
+            - panel: alertmanager
+              params:
+                filter: all
+            - panel: kubectl-issues
+              params:
+                command: pods
+                contexts:
+                  - prod-eu1
+                  - stage-eu1
+                  - dev-eu1
+                args:
+                  - '-A'
+        - direction: column
+          weight: 2
+          children:
+            - direction: column
               children:
-                - panel: apple-calendar
-                - panel: ricoberger-notes
+                - panel: jira
                   params:
-                    dir: ~/Documents/GitHub/ricoberger/notes/daily
-            - weight: 1
-              panel: alertmanager
-              interval: 30
-              params:
-                filter: team-core
-        - weight: 1
-          direction: column
+                    jql: assignee = currentUser()
+                - panel: github-notifications
+                  weight: 2
+            - direction: column
+              children:
+                - panel: github-prs
+                  params:
+                    query: author:@me is:open
+                - panel: github-issues
+                  params:
+                    query: assignee:@me is:open
+        - direction: column
           children:
-            - panel: github-prs
-              title: Created PRs
-              params:
-                query: 'author:@me is:open'
-            - panel: github-prs
-              title: PRs Review Requested
-              params:
-                query: 'review-requested:@me is:open'
-            - panel: github-notifications
+            - panel: apple-calendar
+            - panel: ricoberger-notes
               weight: 2
-  - name: Mail
-    layout:
-      children:
-        - panel: apple-mail
-  - name: Week
-    layout:
-      panel: apple-calendar
-      params:
-        view: week
+              params:
+                dir: '~/notes'
+            - panel: apple-mail
 ```
 
-`dashboards` is a list of named dashboards shown as tabs at the top and switched with
-`[` / `]`; the tab bar is hidden when only one dashboard is defined. Only the active
-dashboard's panels are refreshed — switching back shows cached data instantly and
-refetches only panels whose refresh interval has elapsed.
+### Panels
 
-A layout node is either a split (`direction` + `children`) or a panel. Every node accepts
-`weight` (flex ratio, default `1`); panel nodes additionally accept `title`, `interval`
-(refresh in seconds) and type-specific `params`.
+#### `apple-calendar`
 
-### Panel types
+The `apple-calendar` panel shows a single day by default: `day` selects
+`yesterday`, `today` (default) or `tomorrow`. With `view: week` it shows the
+full week (Monday–Sunday, today highlighted, multi-day events repeated under
+every day they cover) and `day` is ignored. The default title reflects the
+configuration (e.g. `Calendar · Tomorrow`, `Calendar · Week`); an explicit
+`title` always wins. Events that are currently running are shown in blue.
 
-| Type                   | Params                                      | Description                                |
-| ---------------------- | ------------------------------------------- | ------------------------------------------ |
-| `apple-calendar`       | `day`, `view`                               | Events from all Apple calendars            |
-| `ricoberger-notes`     | `dir` (required), `day`                     | A daily note, rendered with `md`           |
-| `apple-mail`           | `messages`, `limit`, `include`, `exclude`   | Messages from the Mail.app inboxes         |
-| `alertmanager`         | `url`, `filter` / `alertmanager`            | Alerts from Alertmanager.app               |
-| `github-prs`           | `query` (required), `limit` (20), `open`    | Pull requests from a `gh search prs` query |
-| `github-issues`        | `query` (required), `limit` (20), `open`    | Issues from a `gh search issues` query     |
-| `github-notifications` | `limit` (50), `open`                        | GitHub notifications via gh-notifications  |
-| `jira`                 | `jql` (required), `limit` (50), `flagField` | Jira work items from a JQL query via acli  |
-| `kubectl-issues`       | `command` (required), `contexts`, `args`    | Kubernetes issues via kubectl issues       |
+For this panel to work, the Swift EventKit helper must be compiled and the
+terminal must be granted access to your calendars.
 
-The apple-calendar panel shows a single day by default: `day` selects `yesterday`, `today`
-(default) or `tomorrow`. With `view: week` it shows the full week (Monday–Sunday,
-today highlighted, multi-day events repeated under every day they cover) and `day` is
-ignored. The default title reflects the configuration (e.g. `Calendar · Tomorrow`,
-`Calendar · Week`); an explicit `title` always wins. Events that are currently
-running are shown in blue.
+```yaml
+- panel: apple-calendar
+  title: Calendar · Today
+  interval: 300
+  params:
+    view: day
+    day: today
+```
 
-The ricoberger-notes panel shows a daily note from `dir` (layout
+#### `apple-mail`
+
+The `apple-mail` panel shows the newest `limit` (default `10`) messages across
+the inboxes of all accounts as `sender · subject · age · account`. `messages`
+selects `unread` (default) or `all`. `include` / `exclude` are lists of account
+names (as shown in Mail.app) to fetch from; if both are set they are ignored and
+all accounts are fetched.
+
+For this panel to work, Mail.app must be running.
+
+```yaml
+- panel: apple-mail
+  title: Mail
+  interval: 300
+  params:
+    messages: unread
+    limit: 10
+    include:
+    exclude:
+```
+
+#### `ricoberger-notes`
+
+The `ricoberger-notes` panel shows a daily note from `dir` (required, layout
 `<dir>/YYYY/MM/YYYY-MM-DD.md`, created from `<dir>/template.md`): `day` selects
 `today` (default) or `yesterday`. The note is rendered as Markdown with the
-[`md`](https://github.com/ricoberger/md) binary if it is on the `PATH`
-(YAML frontmatter is stripped), otherwise as plain text. Enter opens the note
-in the configured editor; yesterday's note is never created retroactively.
+[`md`](https://github.com/ricoberger/md) binary if it is on the `PATH` (YAML
+frontmatter is stripped), otherwise as plain text. Enter opens the note in the
+configured editor; yesterday's note is never created retroactively.
 
-The apple-mail panel shows the newest `limit` (default `10`) messages across the
-inboxes of all accounts as `sender · subject · age · account`. `messages` selects
-`unread` (default) or `all`. `include` / `exclude` are lists of account names (as
-shown in Mail.app) to fetch from; if both are set they are ignored and all accounts
-are fetched.
+```yaml
+- panel: ricoberger-notes
+  title: Daily Note
+  interval: 300
+  params:
+    dir: '~/notes'
+    day: today
+```
 
-The alertmanager panel shows the alerts of one
+#### `alertmanager`
+
+The `alertmanager` panel shows the alerts of one
 [Alertmanager.app](https://github.com/ricoberger/Alertmanager) filter or
-alertmanager: exactly one of `filter` / `alertmanager` (the name as shown in
-the app) is required. `url` sets the API base URL (default
-`http://127.0.0.1:9093`). Each row shows the analysis state (green = analysis
-exists, yellow = running), severity, name, summary, age and alertmanager;
-suppressed alerts are dimmed. Keys on the selected alert: `enter` view the
-alert Markdown in the editor, `o`/`s`/`b`/`d`/`p` open the source / silence /
-runbook / dashboard / panel link in the browser (ignored when the alert has no
-such link), `a` open the finished analysis in the editor or start a new run,
-`y` copy the source URL to the clipboard.
+alertmanager: exactly one of `filter` / `alertmanager` (the name as shown in the
+app) is required. `url` sets the API base URL (default `http://127.0.0.1:9093`).
+Each row shows the analysis state (green = analysis exists, yellow = running),
+severity, name, summary, age and alertmanager; suppressed alerts are dimmed.
+Keys on the selected alert: `enter` view the alert Markdown in the editor,
+`o`/`s`/`b`/`d`/`p` open the source / silence / runbook / dashboard / panel link
+in the browser (ignored when the alert has no such link), `a` open the finished
+analysis in the editor or start a new run, `y` copy the source URL to the
+clipboard.
 
-The github-prs and github-issues panels list the results of a `gh search prs` /
-`gh search issues` query (required). The github-notifications panel lists all
-notifications from the [gh-notifications](https://github.com/ricoberger/dotfiles)
-helper, read and unread. All three use the fzfgh row layout with state-colored
-icons. `open` selects what enter does: `browser` (default) opens the item in
-the web browser, `fzfgh` opens pull requests and issues in
-[fzfgh](https://github.com/ricoberger/dotfiles) (other notification types
-still open in the browser).
+```yaml
+- panel: alertmanager
+  title: Alerts
+  interval: 60
+  params:
+    url: http://127.0.0.1:9093
+    filter:
+```
 
-The jira panel lists the work items of a `jql` query (required) via
-[acli](https://developer.atlassian.com/cloud/acli/), in server order. Each row
-shows the key, the status (colored by its status category) and the summary,
-like fzfjira. Keys on the selected work item: `enter` assemble the work item
-as a Markdown document (metadata, description, comments, sub-tasks and links;
-ADF fields are converted with [`md`](https://github.com/ricoberger/md)) and
-open it in the configured editor, `o` open the work item in the web browser,
-`y` copy the key to the clipboard. `flagField` sets the custom field backing
-the "Flagged" marker (default `customfield_10002`).
+#### `github-prs`
+
+The `github-prs` panel lists the results of a `gh search prs` query (`query` is
+required, `limit` defaults to `20`), using the fzfgh row layout with
+state-colored icons. `open` selects what enter does: `browser` (default) opens
+the pull request in the web browser, `fzfgh` opens it in
+[fzfgh](https://github.com/ricoberger/dotfiles/blob/main/.local/bin/fzfgh).
+
+```yaml
+- panel: github-prs
+  title: Pull Requests
+  interval: 300
+  params:
+    query:
+    limit: 20
+    open: browser
+```
+
+#### `github-issues`
+
+The `github-issues` panel lists the results of a `gh search issues` query;
+params and behavior match the github-prs panel.
+
+```yaml
+- panel: github-issues
+  title: Issues
+  interval: 300
+  params:
+    query:
+    limit: 20
+    open: browser
+```
+
+#### `github-notifications`
+
+The github-notifications panel lists all notifications, read and unread, from
+the
+[gh-notifications](https://github.com/ricoberger/dotfiles/blob/main/.local/bin/gh-notifications)
+helper (`limit` defaults to `50`). `open` selects what enter does: `browser`
+(default) opens the notification in the web browser, `fzfgh` opens pull requests
+and issues in
+[fzfgh](https://github.com/ricoberger/dotfiles/blob/main/.local/bin/fzfgh)
+(other notification types still open in the browser).
+
+```yaml
+- panel: github-notifications
+  title: GitHub Notifications
+  interval: 300
+  params:
+    limit: 50
+    open: browser
+```
+
+#### `jira`
+
+The jira panel lists the work items of a `jql` query (required, `limit` defaults
+to `50`) via [acli](https://developer.atlassian.com/cloud/acli/), in server
+order. Each row shows the key, the status (colored by its status category) and
+the summary, like fzfjira. Keys on the selected work item: `enter` assemble the
+work item as a Markdown document (metadata, description, comments, sub-tasks and
+links; ADF fields are converted with [`md`](https://github.com/ricoberger/md))
+and open it in the configured editor, `o` open the work item in the web browser,
+`y` copy the key to the clipboard. `flagField` sets the custom field backing the
+"Flagged" marker (default `customfield_10002`).
+
+```yaml
+- panel: jira
+  title: Jira
+  interval: 300
+  params:
+    jql:
+    limit: 50
+    flagField: customfield_10002
+```
+
+#### `kubectl-issues`
 
 The kubectl-issues panel runs
 `kubectl issues <command> [--context ...] [args ...] -o json` via the
 [kubectl-issues](https://github.com/ricoberger/kubectl-issues) plugin and
 renders the result as a table (dimmed header, columns like the CLI output).
-`command` is the subcommand (e.g. `pods`, `deployments`, `nodes`), `contexts`
-is a list of kubeconfig contexts (omitted = current context) and `args` is
-passed through verbatim (e.g. `['-A']`); `-o` / `--output` is rejected since
-the panel always requests JSON.
+`command` is the subcommand (e.g. `pods`, `deployments`, `nodes`), `contexts` is
+a list of kubeconfig contexts (omitted = current context) and `args` is passed
+through verbatim; `-o` / `--output` is rejected since the panel always requests
+JSON.
 
-Panels keep their last data when a refresh fails and show the error in the header.
+```yaml
+- panel: kubectl-issues
+  title: Kubernetes Issues
+  interval: 60
+  params:
+    command:
+    contexts:
+    args:
+```

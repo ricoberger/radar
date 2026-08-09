@@ -7,12 +7,12 @@ Guidance for AI agents working on this repository.
 radar is a personal TUI dashboard for macOS built with
 [Ink](https://github.com/vadimdemedes/ink) (React for terminals). It renders
 configurable dashboards with panels for Apple Calendar, Apple Mail, a daily
-note, Alertmanager alerts, GitHub pull requests / issues / notifications,
-Jira work items and Kubernetes issues.
+note, Alertmanager alerts, GitHub pull requests / issues / notifications, Jira
+work items and Kubernetes issues.
 
 - Runtime: Node.js >= 20, ESM only (`"type": "module"`), macOS only.
-- Language: TypeScript with `NodeNext` module resolution — relative imports
-  use the `.js` extension of the compiled output (e.g.
+- Language: TypeScript with `NodeNext` module resolution — relative imports use
+  the `.js` extension of the compiled output (e.g.
   `import { x } from './utils.js'`), never `.ts`. Do not "fix" this.
 - No test framework. Verification is done by building and running the app in
   tmux (see below).
@@ -64,15 +64,15 @@ Key design decisions:
 - Panels are self-contained: data fetching lives in the panel file, not in a
   separate data layer.
 - Panel ids are namespaced per dashboard: `d{i}:p{n}:{type}`.
-- Only the active dashboard mounts and fetches; switching back re-uses the
-  cache if it is fresher than the panel interval.
-- One key handler per panel id (keyRegistry). Global keys are handled in
-  app.tsx first; unhandled keys go to the focused panel.
+- Only the active dashboard mounts and fetches; switching back re-uses the cache
+  if it is fresher than the panel interval.
+- One key handler per panel id (keyRegistry). Global keys are handled in app.tsx
+  first; unhandled keys go to the focused panel.
 - External data comes from CLIs / local APIs: `gh` (GitHub search),
   `gh-notifications` (GitHub inbox), `acli` (Jira), `kubectl issues`
-  (Kubernetes), AppleScript via
-  `osascript` (Mail), the compiled Swift helper (Calendar), HTTP on
-  `127.0.0.1:9093` (Alertmanager.app), the filesystem (daily note).
+  (Kubernetes), AppleScript via `osascript` (Mail), the compiled Swift helper
+  (Calendar), HTTP on `127.0.0.1:9093` (Alertmanager.app), the filesystem (daily
+  note).
 
 ## Configuration
 
@@ -95,10 +95,10 @@ tmux send-keys -t radar-test 'q'          # quit; also: kill-session
 
 Kill leftover sessions/processes before re-testing. Panels depend on the local
 machine (Mail, Calendar permissions, gh auth, Alertmanager.app); an error
-message inside a panel frame is expected when a backend is unavailable — the
-app itself must still render. `node dist/index.js --demo` runs every panel
-with built-in fake data and no external dependencies (except `md` for the
-notes panel), which is useful for screenshots and layout checks.
+message inside a panel frame is expected when a backend is unavailable — the app
+itself must still render. `node dist/index.js --demo` runs every panel with
+built-in fake data and no external dependencies (except `md` for the notes
+panel), which is useful for screenshots and layout checks.
 
 ## Conventions
 

@@ -1,64 +1,48 @@
-# Default config used by `npm run dev`. Copy to ~/.config/radar/config.yaml
-# and adjust — see README.md for the full schema.
+editor: nvim
+
 dashboards:
-  - name: Dashboard
+  - name: Demo
     layout:
       direction: row
       children:
         - direction: column
-          weight: 3
+          weight: 2
           children:
             - panel: alertmanager
-              title: Alerts (incident.io)
               params:
-                filter: team-core (incident.io)
-            - panel: alertmanager
-              weight: 3
-              params:
-                filter: team-core
+                filter: all
             - panel: kubectl-issues
-              weight: 3
               params:
                 command: pods
                 contexts:
-                  - prod-de1
-                  - prod-us1
-                  - prod-au1
-                  - prod-ae1
-                  - prod-core
-                  - stage-de1
-                  - dev-de1
+                  - prod-eu1
+                  - stage-eu1
+                  - dev-eu1
                 args:
-                  - --all-namespaces
+                  - '-A'
         - direction: column
           weight: 2
           children:
-            - panel: jira
-              params:
-                jql:
-                  project = CORE AND assignee = currentUser() AND statusCategory
-                  != Done AND status != Backlog ORDER BY priority DESC, updated
-                  DESC
-            - panel: github-notifications
-              weight: 3
-            - panel: github-prs
-              weight: 2
-              title: Created
-              params:
-                query: 'archived:false is:open author:@me'
-            - panel: github-prs
-              weight: 2
-              title: Review Requested
-              params:
-                query: 'archived:false is:open review-requested:@me'
+            - direction: column
+              children:
+                - panel: jira
+                  params:
+                    jql: assignee = currentUser()
+                - panel: github-notifications
+                  weight: 2
+            - direction: column
+              children:
+                - panel: github-prs
+                  params:
+                    query: author:@me is:open
+                - panel: github-issues
+                  params:
+                    query: assignee:@me is:open
         - direction: column
           children:
             - panel: apple-calendar
-              params:
-                view: day
-                day: today
             - panel: ricoberger-notes
               weight: 2
               params:
-                dir: ~/Documents/GitHub/ricoberger/notes/daily
+                dir: '~/notes'
             - panel: apple-mail
