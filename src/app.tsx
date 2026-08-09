@@ -1,5 +1,6 @@
-import { Box, Text, useInput } from 'ink';
-import { useMemo, type ReactNode } from 'react';
+import { Box, Text, useApp, useInput } from 'ink';
+import { spawnSync } from 'node:child_process';
+import { useCallback, useMemo, type ReactNode } from 'react';
 
 import { flattenPanels } from './config.js';
 import { AppContext } from './context.js';
@@ -11,8 +12,6 @@ import { Config, FlatPanel, isPanelNode, LayoutNode } from './types.js';
 
 interface AppProps {
   config: Config;
-  runExternal: (command: string, args: string[]) => void;
-  onQuit: () => void;
 }
 
 function PanelHost({ panel, focused }: { panel: FlatPanel; focused: boolean }) {
@@ -59,8 +58,21 @@ function renderNode(
   );
 }
 
-export function App({ config, runExternal, onQuit }: AppProps) {
+export function App({ config }: AppProps) {
+  const { exit, suspendTerminal } = useApp();
   const { columns, rows } = useScreenSize();
+
+  // Hands the terminal to an external command (editor, fzfgh) and blocks
+  // until it exits; ink restores its terminal state and redraws afterwards.
+  const runExternal = useCallback(
+    (command: string, args: string[]) => {
+      void suspendTerminal(() => {
+        spawnSync(command, args, { stdio: 'inherit' });
+      });
+    },
+    [suspendTerminal],
+  );
+
   const dashboards = config.dashboards;
   const [active, setActive] = useSessionState('app:dashboard', 0);
   const dashboard = dashboards[active] ?? dashboards[0];
@@ -94,7 +106,7 @@ export function App({ config, runExternal, onQuit }: AppProps) {
   useInput((input, key) => {
     const handleKey = (char: string) => {
       if (char === 'q' || (key.ctrl && char === 'c')) {
-        onQuit();
+        exit();
         return;
       }
       if (/^[1-9]$/.test(char)) {
