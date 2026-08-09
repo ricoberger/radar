@@ -1,7 +1,7 @@
 {
   "name": "@ricoberger/radar",
   "version": "0.0.1",
-  "description": "Personal TUI radar: Apple Calendar, Apple Mail, daily notes, Alertmanager alerts and GitHub PRs / notifications.",
+  "description": "Personal AI generated TUI radar built with Ink — everything on your radar in one terminal.",
   "type": "module",
   "bin": {
     "radar": "dist/index.js"
