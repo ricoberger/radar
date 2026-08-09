@@ -285,3 +285,12 @@ JSON.
     contexts:
     args:
 ```
+
+## Release
+
+To release a new version run the following commands:
+
+```sh
+npm version <patch|minor|major>
+git push && git push --tags
+```
