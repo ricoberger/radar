@@ -32,17 +32,18 @@ errors. Run `npm run format` before committing.
 
 ```
 src/
-  index.tsx     Entry point: loads config (or demo config with --demo),
-                alt-screen handling, renders <App/>
+  index.tsx     Entry point: parses flags, loads config (or demo config with
+                --demo), renders <App/> (ink alternateScreen option)
   app.tsx       Root component: dashboard tabs, global keymap, layout renderer,
-                zoom, footer
+                zoom, footer; runExternal hands the terminal to external
+                commands via ink's suspendTerminal()
   config.ts     Config loading/validation (YAML). Path: --config → $RADAR_CONFIG
                 → ~/.config/radar/config.yaml. Missing config = error + exit 1
   demo.ts       --demo mode: module-level flag, built-in demo config and fake
                 fixture data returned by every panel's fetch function
   types.ts      Config / layout / panel type definitions
   store.ts      Module-level session state: panel data cache, focus, key
-                registry. Survives remounts (e.g. editor suspend/resume)
+                registry. Survives dashboard switches
   context.ts    React context (focus, zoom, screen size)
   utils.ts      exec helpers, time formatting
   components/   PanelFrame (border + title), SelectList
