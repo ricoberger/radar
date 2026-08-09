@@ -1,6 +1,6 @@
 {
   "name": "@ricoberger/radar",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Personal TUI radar: Apple Calendar, Apple Mail, daily notes, Alertmanager alerts and GitHub PRs / notifications.",
   "type": "module",
   "bin": {
