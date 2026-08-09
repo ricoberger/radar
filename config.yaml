@@ -19,7 +19,7 @@ dashboards:
                   - stage-eu1
                   - dev-eu1
                 args:
-                  - '-A'
+                  - "-A"
         - direction: column
           weight: 2
           children:
@@ -44,5 +44,5 @@ dashboards:
             - panel: ricoberger-notes
               weight: 2
               params:
-                dir: '~/notes'
+                dir: "~/notes"
             - panel: apple-mail
