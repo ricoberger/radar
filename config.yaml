@@ -8,18 +8,30 @@ dashboards:
         - direction: column
           weight: 2
           children:
-            - panel: alertmanager
-              params:
-                filter: all
-            - panel: kubectl-issues
-              params:
-                command: pods
-                contexts:
-                  - prod-eu1
-                  - stage-eu1
-                  - dev-eu1
-                args:
-                  - "-A"
+            - direction: column
+              children:
+                - panel: httpmonitor
+                  params:
+                    targets:
+                      - name: Website
+                        url: https://acme.com
+                      - name: API
+                        url: https://api.acme.com/health
+                - panel: alertmanager
+                  weight: 2
+                  params:
+                    filter: all
+            - direction: column
+              children:
+                - panel: kubectl-issues
+                  params:
+                    command: pods
+                    contexts:
+                      - prod-eu1
+                      - stage-eu1
+                      - dev-eu1
+                    args:
+                      - "-A"
         - direction: column
           weight: 2
           children:
