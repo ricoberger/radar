@@ -18,6 +18,10 @@ import {
   validateGithubNotificationsParams,
 } from './GithubNotificationsPanel.js';
 import { GithubPrsPanel } from './GithubPrsPanel.js';
+import {
+  HttpMonitorPanel,
+  validateHttpMonitorParams,
+} from './HttpMonitorPanel.js';
 import { JiraPanel, validateJiraParams } from './JiraPanel.js';
 import {
   KubectlIssuesPanel,
@@ -84,6 +88,11 @@ export const panelDefaults: Record<string, PanelTypeDefaults> = {
     interval: 60,
     validateParams: validateKubectlIssuesParams,
   },
+  httpmonitor: {
+    title: 'HTTP Monitor',
+    interval: 10,
+    validateParams: validateHttpMonitorParams,
+  },
 };
 
 export const panelComponents: Record<string, ComponentType<PanelProps>> = {
@@ -96,4 +105,5 @@ export const panelComponents: Record<string, ComponentType<PanelProps>> = {
   'github-notifications': GithubNotificationsPanel,
   jira: JiraPanel,
   'kubectl-issues': KubectlIssuesPanel,
+  httpmonitor: HttpMonitorPanel,
 };

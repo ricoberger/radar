@@ -8,7 +8,7 @@ radar is a personal TUI dashboard for macOS built with
 [Ink](https://github.com/vadimdemedes/ink) (React for terminals). It renders
 configurable dashboards with panels for Apple Calendar, Apple Mail, a daily
 note, Alertmanager alerts, GitHub pull requests / issues / notifications, Jira
-work items and Kubernetes issues.
+work items, Kubernetes issues and HTTP checks.
 
 - Runtime: Node.js >= 20, ESM only (`"type": "module"`), macOS only.
 - Language: TypeScript with `NodeNext` module resolution — relative imports use

@@ -3,6 +3,7 @@ import type { CalendarEvent } from './panels/AppleCalendarPanel.js';
 import type { MailMessage } from './panels/AppleMailPanel.js';
 import type { SearchItem } from './panels/github.js';
 import type { Notification } from './panels/GithubNotificationsPanel.js';
+import type { CheckResult } from './panels/HttpMonitorPanel.js';
 import type { Config } from './types.js';
 
 // Demo mode (--demo): the app runs with the built-in config below and every
@@ -31,14 +32,37 @@ export const demoConfig: Config = {
             direction: 'column',
             weight: 2,
             children: [
-              { panel: 'alertmanager', params: { filter: 'all' } },
               {
-                panel: 'kubectl-issues',
-                params: {
-                  command: 'pods',
-                  contexts: ['prod-eu1', 'stage-eu1', 'dev-eu1'],
-                  args: ['-A'],
-                },
+                direction: 'column',
+                children: [
+                  {
+                    panel: 'httpmonitor',
+                    params: {
+                      targets: [
+                        { name: 'Website', url: 'https://acme.com' },
+                        { name: 'API', url: 'https://api.acme.com/health' },
+                      ],
+                    },
+                  },
+                  {
+                    panel: 'alertmanager',
+                    weight: 2,
+                    params: { filter: 'all' },
+                  },
+                ],
+              },
+              {
+                direction: 'column',
+                children: [
+                  {
+                    panel: 'kubectl-issues',
+                    params: {
+                      command: 'pods',
+                      contexts: ['prod-eu1', 'stage-eu1', 'dev-eu1'],
+                      args: ['-A'],
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -56,7 +80,6 @@ export const demoConfig: Config = {
                   { panel: 'github-notifications', weight: 2 },
                 ],
               },
-
               {
                 direction: 'column',
                 children: [
@@ -819,6 +842,68 @@ export function demoNotifications(): Notification[] {
       issueState,
       isDraft,
       conclusion,
+    }),
+  );
+}
+
+export function demoHttpMonitor(): CheckResult[] {
+  const targets: Array<
+    [string, string, number, number?, number?, number?, number?, number?]
+  > = [
+    ['Website', 'https://acme.com', 200, 8, 12, 34, 87, 14],
+    ['API', 'https://api.acme.com/health', 200, 5, 9, 28, 42, 3],
+    ['Docs', 'https://docs.acme.com', 200, 11, 14, 41, 132, 27],
+    ['Auth', 'https://auth.acme.com/healthz', 204, 6, 10, 31, 55, 1],
+    ['Grafana', 'https://grafana.acme.com', 302, 7, 11, 36, 61, 2],
+    ['Registry', 'https://registry.acme.com/v2/', 401, 9, 13, 39, 74, 4],
+    [
+      'Staging API',
+      'https://api.staging.acme.com/health',
+      503,
+      12,
+      18,
+      47,
+      812,
+      6,
+    ],
+    [
+      'Legacy CRM',
+      'https://crm.acme.com',
+      0,
+      15,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    ],
+  ];
+  return targets.map(
+    ([
+      name,
+      url,
+      status,
+      dnsLookup,
+      tcpConnection,
+      tlsHandshake,
+      serverProcessing,
+      contentTransfer,
+    ]) => ({
+      name,
+      url,
+      status,
+      dnsLookup,
+      tcpConnection,
+      tlsHandshake,
+      serverProcessing,
+      contentTransfer,
+      total:
+        status === 0
+          ? 2000
+          : (dnsLookup ?? 0) +
+            (tcpConnection ?? 0) +
+            (tlsHandshake ?? 0) +
+            (serverProcessing ?? 0) +
+            (contentTransfer ?? 0),
     }),
   );
 }

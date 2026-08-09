@@ -4,7 +4,7 @@ Personal AI generated TUI radar built with
 [Ink](https://github.com/vadimdemedes/ink) — everything on your radar in one
 terminal: Apple Calendar events, Apple Mail messages, the daily note,
 Alertmanager.app alerts, GitHub pull requests / issues / notifications, Jira
-work items and Kubernetes issues in configurable dashboards.
+work items, Kubernetes issues and HTTP checks in configurable dashboards.
 
 ![Demo](.github/assets/demo.png)
 
@@ -67,18 +67,30 @@ dashboards:
         - direction: column
           weight: 2
           children:
-            - panel: alertmanager
-              params:
-                filter: all
-            - panel: kubectl-issues
-              params:
-                command: pods
-                contexts:
-                  - prod-eu1
-                  - stage-eu1
-                  - dev-eu1
-                args:
-                  - '-A'
+            - direction: column
+              children:
+                - panel: httpmonitor
+                  params:
+                    targets:
+                      - name: Website
+                        url: https://acme.com
+                      - name: API
+                        url: https://api.acme.com/health
+                - panel: alertmanager
+                  weight: 2
+                  params:
+                    filter: all
+            - direction: column
+              children:
+                - panel: kubectl-issues
+                  params:
+                    command: pods
+                    contexts:
+                      - prod-eu1
+                      - stage-eu1
+                      - dev-eu1
+                    args:
+                      - '-A'
         - direction: column
           weight: 2
           children:
@@ -287,6 +299,30 @@ JSON.
     command:
     contexts:
     args:
+```
+
+#### `httpmonitor`
+
+The `httpmonitor` panel checks a list of HTTP targets (like
+[httpmonitor](https://github.com/ricoberger/httpmonitor)) and renders one row
+per target with the status code (green = 2xx/3xx, yellow = 4xx, red = 5xx or
+`0` for failed checks) and the timings of the different phases: total, DNS
+lookup, TCP connection, TLS handshake, server processing and content transfer.
+Every check uses a fresh connection, redirects are not followed and a `-` marks
+a phase that did not happen. Each target requires a `name` and a http(s) `url`;
+optional per target: `method` (default `GET`), `body`, `username` / `password`
+(basic auth, takes precedence over `token`), `token` (bearer auth), `insecure`
+(skip TLS verification) and `timeout` (seconds, default `2`). `enter` opens the
+selected target in the browser.
+
+```yaml
+- panel: httpmonitor
+  title: HTTP Monitor
+  interval: 10
+  params:
+    targets:
+      - name:
+        url:
 ```
 
 ## Release
