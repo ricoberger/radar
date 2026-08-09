@@ -23,16 +23,16 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ink": "^6.0.0",
+    "ink": "^7.1.1",
     "react": "^19.0.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.1.2",
     "@types/react": "^19.0.0",
     "prettier": "3.9.6",
     "prettier-plugin-organize-imports": "4.3.0",
-    "typescript": "^5.9.0"
+    "typescript": "^7.0.2"
   },
   "os": [
     "darwin"
