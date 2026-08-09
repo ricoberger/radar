@@ -1,6 +1,6 @@
 {
   "name": "@ricoberger/radar",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Personal AI generated TUI radar built with Ink — everything on your radar in one terminal.",
   "type": "module",
   "bin": {
