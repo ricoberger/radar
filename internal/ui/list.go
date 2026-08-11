@@ -23,14 +23,7 @@ type List struct {
 
 // Clamp returns the selection clamped to a list of length n.
 func (l *List) Clamp(n int) int {
-	i := l.Selected
-	if i > n-1 {
-		i = n - 1
-	}
-	if i < 0 {
-		i = 0
-	}
-	return i
+	return max(min(l.Selected, n-1), 0)
 }
 
 // Handle processes list navigation keys for a list of length n. It returns
@@ -67,14 +60,7 @@ func Window(length, selected, visible int) int {
 	if length <= visible {
 		return 0
 	}
-	start := selected - visible/2
-	if start < 0 {
-		start = 0
-	}
-	if start > length-visible {
-		start = length - visible
-	}
-	return start
+	return min(max(selected-visible/2, 0), length-visible)
 }
 
 // ListView renders the visible window of rows for the given content height.
