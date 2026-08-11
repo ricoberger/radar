@@ -10,17 +10,12 @@ Jira work items, Kubernetes issues and HTTP checks in configurable dashboards.
 
 ## Install
 
+Check the [releases](https://github.com/ricoberger/radar/releases) page for the
+full list of pre-built binaries or install with `go install`:
+
 ```sh
 go install github.com/ricoberger/radar@latest
-
-# Or install from source
-go build -o ./bin/radar .
-mkdir -p ~/.config/radar && cp config.yaml ~/.config/radar/config.yaml
-./bin/radar
 ```
-
-To try it without installing, run `go run . --config config.yaml` — it uses the
-`config.yaml` from this repository.
 
 The apple-calendar panel compiles a small Swift EventKit helper (embedded in the
 binary) with `swiftc` on first use and caches it under `~/Library/Caches/radar`.
