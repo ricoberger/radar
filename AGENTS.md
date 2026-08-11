@@ -24,10 +24,11 @@ work items, Kubernetes issues and HTTP checks.
 | `go build -o radar .`           | Build the `radar` binary        |
 | `go run . --config config.yaml` | Run with the repo `config.yaml` |
 | `go run . --demo`               | Run with built-in demo data     |
+| `golangci-lint run ./...`       | Lint (see `.golangci.yaml`)     |
 | `gofmt -w .`                    | Format                          |
 
 Always run `go build ./...` after changing source files and fix all compiler
-errors. Run `gofmt -w .` before committing.
+errors. Run `golangci-lint run ./...` and `gofmt -w .` before committing.
 
 ## Architecture
 
