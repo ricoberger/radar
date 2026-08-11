@@ -9,12 +9,11 @@ on:
 permissions: read-all
 
 jobs:
-  npm:
-    name: npm
+  binaries:
+    name: Binaries
     runs-on: macos-latest
     permissions:
       contents: write
-      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -22,27 +21,17 @@ jobs:
           fetch-depth: 0
 
       - name: Setup
-        uses: actions/setup-node@v7
+        uses: actions/setup-go@v6
         with:
-          node-version: 24
-          cache: npm
-          registry-url: https://registry.npmjs.org
+          go-version-file: go.mod
 
-      - name: Install Dependencies
+      - name: Build
         run: |
-          npm ci
+          GOOS=darwin GOARCH=arm64 go build -o radar-darwin-arm64 .
+          GOOS=darwin GOARCH=amd64 go build -o radar-darwin-amd64 .
 
-      - name: Publish
-        run: |
-          npm publish
-
-      - name: Pack
-        run: |
-          npm pack
-          mv ricoberger-radar-*.tgz radar.tgz
-
-      - name: Upload Artifact
+      - name: Upload Artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.ref_name }} ./radar.tgz
+          gh release upload ${{ github.ref_name }} ./radar-darwin-arm64 ./radar-darwin-amd64

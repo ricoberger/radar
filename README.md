@@ -1,31 +1,31 @@
 # radar
 
 Personal AI generated TUI radar built with
-[Ink](https://github.com/vadimdemedes/ink) — everything on your radar in one
-terminal: Apple Calendar events, Apple Mail messages, the daily note,
-Alertmanager.app alerts, GitHub pull requests / issues / notifications, Jira
-work items, Kubernetes issues and HTTP checks in configurable dashboards.
+[Bubble Tea](https://github.com/charmbracelet/bubbletea) — everything on your
+radar in one terminal: Apple Calendar events, Apple Mail messages, the daily
+note, Alertmanager.app alerts, GitHub pull requests / issues / notifications,
+Jira work items, Kubernetes issues and HTTP checks in configurable dashboards.
 
 ![Demo](.github/assets/demo.png)
 
 ## Install
 
 ```sh
-npm install -g @ricoberger/radar
+go install github.com/ricoberger/radar@latest
 
 # Or install from source
-npm install
-npm link
+make build
 mkdir -p ~/.config/radar && cp config.yaml ~/.config/radar/config.yaml
-radar
+./radar
 ```
 
-To try it without linking, run `npm run dev` — it uses the `config.yaml` from
+To try it without installing, run `make dev` — it uses the `config.yaml` from
 this repository.
 
-The build compiles the TypeScript sources to `dist/` and the Swift EventKit
-helper to `bin/apple-calendar-helper`. The first run of the apple-calendar panel
-triggers a macOS prompt to grant your terminal access to your calendars.
+The apple-calendar panel compiles a small Swift EventKit helper (embedded in
+the binary) with `swiftc` on first use and caches it under
+`~/Library/Caches/radar`. The first run triggers a macOS prompt to grant your
+terminal access to your calendars.
 
 ## Keybindings
 
@@ -130,8 +130,8 @@ every day they cover) and `day` is ignored. The default title reflects the
 configuration (e.g. `Calendar · Tomorrow`, `Calendar · Week`); an explicit
 `title` always wins. Events that are currently running are shown in blue.
 
-For this panel to work, the Swift EventKit helper must be compiled and the
-terminal must be granted access to your calendars.
+For this panel to work, `swiftc` must be available (Xcode Command Line Tools)
+and the terminal must be granted access to your calendars.
 
 ```yaml
 - panel: apple-calendar
@@ -330,6 +330,6 @@ selected target in the browser.
 To release a new version run the following commands:
 
 ```sh
-npm version <patch|minor|major>
+git tag v<major>.<minor>.<patch>
 git push && git push --tags
 ```

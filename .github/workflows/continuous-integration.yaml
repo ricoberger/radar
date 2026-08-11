@@ -10,8 +10,8 @@ on:
       - main
 
 jobs:
-  node:
-    name: Node.js
+  go:
+    name: Go
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -20,15 +20,14 @@ jobs:
           fetch-depth: 0
 
       - name: Setup
-        uses: actions/setup-node@v7
+        uses: actions/setup-go@v6
         with:
-          node-version: 24
-          cache: npm
+          go-version-file: go.mod
 
-      - name: Install Dependencies
+      - name: Vet
         run: |
-          npm ci
+          go vet ./...
 
       - name: Build
         run: |
-          npm run build
+          go build ./...
