@@ -128,7 +128,7 @@ func runWithInput(timeout time.Duration, input string, env []string, command str
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		detail := strings.SplitN(strings.TrimSpace(stderr.String()), "\n", 2)[0]
+		detail, _, _ := strings.Cut(strings.TrimSpace(stderr.String()), "\n")
 		if detail == "" {
 			detail = err.Error()
 		}

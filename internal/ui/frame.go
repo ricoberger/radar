@@ -21,10 +21,7 @@ type FrameState struct {
 
 // FormatAge renders a duration like Ink's formatAge: 42s, 5m, 3h, 2d.
 func FormatAge(d time.Duration) string {
-	s := int(d.Seconds())
-	if s < 0 {
-		s = 0
-	}
+	s := max(int(d.Seconds()), 0)
 	if s < 60 {
 		return fmt.Sprintf("%ds", s)
 	}
@@ -77,7 +74,7 @@ func Frame(width, height int, st FrameState, focused bool, content string) strin
 		status = append(status, Dim("…"))
 	}
 	if st.Err != nil {
-		msg := strings.SplitN(strings.TrimSpace(st.Err.Error()), "\n", 2)[0]
+		msg, _, _ := strings.Cut(strings.TrimSpace(st.Err.Error()), "\n")
 		status = append(status, Colored("red", "! "+msg))
 	} else if !st.LastUpdated.IsZero() {
 		status = append(status, Dim(FormatAge(time.Since(st.LastUpdated))))
@@ -113,12 +110,14 @@ func Frame(width, height int, st FrameState, focused bool, content string) strin
 	writeRow := func(line string) {
 		b.WriteString("\n")
 		b.WriteString(border.Render("│"))
-		b.WriteString(pad + padTo(line, innerW) + pad)
+		b.WriteString(pad)
+		b.WriteString(padTo(line, innerW))
+		b.WriteString(pad)
 		b.WriteString(border.Render("│"))
 	}
 	writeRow(header)
 	writeRow(border.Render(strings.Repeat("─", innerW)))
-	for i := 0; i < contentH; i++ {
+	for i := range contentH {
 		line := ""
 		if i < len(contentLines) {
 			line = contentLines[i]
