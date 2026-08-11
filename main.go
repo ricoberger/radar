@@ -3,6 +3,7 @@ package main
 
 import (
 	_ "embed"
+	"flag"
 	"fmt"
 	"os"
 
@@ -25,26 +26,15 @@ func fail(message string) {
 func main() {
 	panels.CalendarHelperSource = calendarHelperSource
 
-	args := os.Args[1:]
-	configPath := ""
-	demoMode := false
-	for i := 0; i < len(args); i++ {
-		switch args[i] {
-		case "--demo":
-			demoMode = true
-		case "--config":
-			i++
-			if i >= len(args) || args[i] == "" {
-				fail("Missing value for --config.")
-			}
-			configPath = args[i]
-		default:
-			fail(fmt.Sprintf(
-				"Unknown argument: %s.\nUsage: radar [--config <config.yaml>] [--demo]",
-				args[i],
-			))
-		}
-	}
+	var (
+		configPath string
+		demoMode   bool
+	)
+	flag.StringVar(&configPath, "config", "",
+		"Path to the YAML config file (defaults to $RADAR_CONFIG or ~/.config/radar/config.yaml).")
+	flag.BoolVar(&demoMode, "demo", false,
+		"Run with built-in demo data instead of loading a config file.")
+	flag.Parse()
 
 	registry := panels.Registry()
 	var cfg *config.Config
