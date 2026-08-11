@@ -71,9 +71,9 @@ Key design decisions:
 - Panels are self-contained: data fetching lives in the panel file, not in a
   separate data layer.
 - Panel ids are namespaced per dashboard: `d{i}:p{n}:{type}`.
-- Panel instances live for the whole session; their state is the cache. Only
-  the active dashboard fetches (a 1s heartbeat asks each panel whether a fetch
-  is due). Switching back re-uses the data if it is fresher than the panel
+- Panel instances live for the whole session; their state is the cache. Only the
+  active dashboard fetches (a 1s heartbeat asks each panel whether a fetch is
+  due). Switching back re-uses the data if it is fresher than the panel
   interval.
 - Fetches run as tea.Cmds and return panel-addressed messages implementing
   `PanelMsg`; the app routes them to the owning panel via `Apply`.
@@ -82,15 +82,15 @@ Key design decisions:
 - External data comes from CLIs / local APIs: `gh` (GitHub search),
   `gh-notifications` (GitHub inbox), `acli` (Jira), `kubectl issues`
   (Kubernetes), AppleScript via `osascript` (Mail), the compiled Swift helper
-  (Calendar), HTTP on `127.0.0.1:9093` (Alertmanager.app), the filesystem
-  (daily note).
+  (Calendar), HTTP on `127.0.0.1:9093` (Alertmanager.app), the filesystem (daily
+  note).
 
 ## Configuration
 
 Users must provide a YAML config (see `config.yaml` for the reference config,
-and README.md for docs). It defines a `dashboards` list, each with
-a `name` and a `layout` tree of `row` / `column` / panel nodes. When changing
-config semantics, update `internal/config/config.go` validation,
+and README.md for docs). It defines a `dashboards` list, each with a `name` and
+a `layout` tree of `row` / `column` / panel nodes. When changing config
+semantics, update `internal/config/config.go` validation,
 `internal/panels/registry.go`, `config.yaml` and README.md together.
 
 ## Verifying changes
@@ -107,10 +107,10 @@ tmux send-keys -t radar-test 'q'          # quit; also: kill-session
 
 Kill leftover sessions/processes before re-testing. Panels depend on the local
 machine (Mail, Calendar permissions, gh auth, Alertmanager.app); an error
-message inside a panel frame is expected when a backend is unavailable — the
-app itself must still render. `./bin/radar --demo` runs every panel with
-built-in fake data and no external dependencies (except `md` for the notes
-panel), which is useful for screenshots and layout checks.
+message inside a panel frame is expected when a backend is unavailable — the app
+itself must still render. `./bin/radar --demo` runs every panel with built-in
+fake data and no external dependencies (except `md` for the notes panel), which
+is useful for screenshots and layout checks.
 
 ## Conventions
 

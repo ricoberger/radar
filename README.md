@@ -22,10 +22,10 @@ mkdir -p ~/.config/radar && cp config.yaml ~/.config/radar/config.yaml
 To try it without installing, run `go run . --config config.yaml` — it uses the
 `config.yaml` from this repository.
 
-The apple-calendar panel compiles a small Swift EventKit helper (embedded in
-the binary) with `swiftc` on first use and caches it under
-`~/Library/Caches/radar`. The first run triggers a macOS prompt to grant your
-terminal access to your calendars.
+The apple-calendar panel compiles a small Swift EventKit helper (embedded in the
+binary) with `swiftc` on first use and caches it under `~/Library/Caches/radar`.
+The first run triggers a macOS prompt to grant your terminal access to your
+calendars.
 
 ## Keybindings
 
@@ -90,7 +90,7 @@ dashboards:
                       - stage-eu1
                       - dev-eu1
                     args:
-                      - '-A'
+                      - "-A"
         - direction: column
           weight: 2
           children:
@@ -115,7 +115,7 @@ dashboards:
             - panel: ricoberger-notes
               weight: 2
               params:
-                dir: '~/notes'
+                dir: "~/notes"
             - panel: apple-mail
 ```
 
@@ -131,8 +131,8 @@ configuration (e.g. `Calendar · Tomorrow`, `Calendar · Week`); an explicit
 `title` always wins. Events that are currently running are shown in blue.
 
 For this panel to work, `swiftc` must be available (Xcode Command Line Tools)
-and the terminal must be granted access to your calendars. This panel only
-works on macOS.
+and the terminal must be granted access to your calendars. This panel only works
+on macOS.
 
 ```yaml
 - panel: apple-calendar
@@ -179,7 +179,7 @@ configured editor; yesterday's note is never created retroactively.
   title: Daily Note
   interval: 300
   params:
-    dir: '~/notes'
+    dir: "~/notes"
     day: today
 ```
 
@@ -307,11 +307,11 @@ JSON.
 
 The `httpmonitor` panel checks a list of HTTP targets (like
 [httpmonitor](https://github.com/ricoberger/httpmonitor)) and renders one row
-per target with the status code (green = 2xx/3xx, yellow = 4xx, red = 5xx or
-`0` for failed checks) and the timings of the different phases: total, DNS
-lookup, TCP connection, TLS handshake, server processing and content transfer.
-Every check uses a fresh connection, redirects are not followed and a `-` marks
-a phase that did not happen. Each target requires a `name` and a http(s) `url`;
+per target with the status code (green = 2xx/3xx, yellow = 4xx, red = 5xx or `0`
+for failed checks) and the timings of the different phases: total, DNS lookup,
+TCP connection, TLS handshake, server processing and content transfer. Every
+check uses a fresh connection, redirects are not followed and a `-` marks a
+phase that did not happen. Each target requires a `name` and a http(s) `url`;
 optional per target: `method` (default `GET`), `body`, `username` / `password`
 (basic auth, takes precedence over `token`), `token` (bearer auth), `insecure`
 (skip TLS verification) and `timeout` (seconds, default `2`). `enter` opens the
@@ -325,6 +325,13 @@ selected target in the browser.
     targets:
       - name:
         url:
+        method: GET
+        body:
+        timeout: 2
+        username:
+        password:
+        token:
+        insecure: false
 ```
 
 ## Release
