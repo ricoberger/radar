@@ -19,15 +19,15 @@ work items, Kubernetes issues and HTTP checks.
 
 ## Commands
 
-| Command       | Purpose                                     |
-| ------------- | ------------------------------------------- |
-| `make build`  | Build the `radar` binary                    |
-| `make dev`    | Build, then run with the repo `config.yaml` |
-| `make demo`   | Build, then run with built-in demo data     |
-| `make format` | gofmt                                       |
+| Command                         | Purpose                         |
+| ------------------------------- | ------------------------------- |
+| `go build -o radar .`           | Build the `radar` binary        |
+| `go run . --config config.yaml` | Run with the repo `config.yaml` |
+| `go run . --demo`               | Run with built-in demo data     |
+| `gofmt -w .`                    | Format                          |
 
 Always run `go build ./...` after changing source files and fix all compiler
-errors. Run `make format` before committing.
+errors. Run `gofmt -w .` before committing.
 
 ## Architecture
 
@@ -86,8 +86,8 @@ Key design decisions:
 
 ## Configuration
 
-Users must provide a YAML config (see `config.yaml` for the reference used by
-`make dev`, and README.md for docs). It defines a `dashboards` list, each with
+Users must provide a YAML config (see `config.yaml` for the reference config,
+and README.md for docs). It defines a `dashboards` list, each with
 a `name` and a `layout` tree of `row` / `column` / panel nodes. When changing
 config semantics, update `internal/config/config.go` validation,
 `internal/panels/registry.go`, `config.yaml` and README.md together.
