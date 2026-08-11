@@ -14,9 +14,9 @@ Jira work items, Kubernetes issues and HTTP checks in configurable dashboards.
 go install github.com/ricoberger/radar@latest
 
 # Or install from source
-go build -o radar .
+go build -o ./bin/radar .
 mkdir -p ~/.config/radar && cp config.yaml ~/.config/radar/config.yaml
-./radar
+./bin/radar
 ```
 
 To try it without installing, run `go run . --config config.yaml` — it uses the

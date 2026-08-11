@@ -21,7 +21,7 @@ work items, Kubernetes issues and HTTP checks.
 
 | Command                         | Purpose                         |
 | ------------------------------- | ------------------------------- |
-| `go build -o radar .`           | Build the `radar` binary        |
+| `go build -o ./bin/radar .`     | Build the `radar` binary        |
 | `go run . --config config.yaml` | Run with the repo `config.yaml` |
 | `go run . --demo`               | Run with built-in demo data     |
 | `golangci-lint run ./...`       | Lint (see `.golangci.yaml`)     |
@@ -98,8 +98,8 @@ config semantics, update `internal/config/config.go` validation,
 Run the TUI in tmux and inspect the output:
 
 ```sh
-go build -o radar .
-tmux new-session -d -s radar-test -x 200 -y 50 './radar --config config.yaml'
+go build -o ./bin/radar .
+tmux new-session -d -s radar-test -x 200 -y 50 './bin/radar --config config.yaml'
 sleep 3
 tmux capture-pane -t radar-test -p        # add -e to keep colors
 tmux send-keys -t radar-test 'q'          # quit; also: kill-session
@@ -108,9 +108,9 @@ tmux send-keys -t radar-test 'q'          # quit; also: kill-session
 Kill leftover sessions/processes before re-testing. Panels depend on the local
 machine (Mail, Calendar permissions, gh auth, Alertmanager.app); an error
 message inside a panel frame is expected when a backend is unavailable — the
-app itself must still render. `./radar --demo` runs every panel with built-in
-fake data and no external dependencies (except `md` for the notes panel), which
-is useful for screenshots and layout checks.
+app itself must still render. `./bin/radar --demo` runs every panel with
+built-in fake data and no external dependencies (except `md` for the notes
+panel), which is useful for screenshots and layout checks.
 
 ## Conventions
 
@@ -118,4 +118,4 @@ is useful for screenshots and layout checks.
   `.golangci.yaml`) must be clean.
 - Keep README.md in sync with keybinding, panel and config changes.
 - Commits follow Conventional Commits.
-- Do not commit the `radar` binary (gitignored).
+- Do not commit the `bin/` directory (gitignored).
