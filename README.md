@@ -131,7 +131,8 @@ configuration (e.g. `Calendar · Tomorrow`, `Calendar · Week`); an explicit
 `title` always wins. Events that are currently running are shown in blue.
 
 For this panel to work, `swiftc` must be available (Xcode Command Line Tools)
-and the terminal must be granted access to your calendars.
+and the terminal must be granted access to your calendars. This panel only
+works on macOS.
 
 ```yaml
 - panel: apple-calendar
@@ -150,7 +151,8 @@ selects `unread` (default) or `all`. `include` / `exclude` are lists of account
 names (as shown in Mail.app) to fetch from; if both are set they are ignored and
 all accounts are fetched.
 
-For this panel to work, Mail.app must be running.
+For this panel to work, Mail.app must be running. This panel only works on
+macOS.
 
 ```yaml
 - panel: apple-mail

@@ -11,7 +11,8 @@ configurable dashboards with panels for Apple Calendar, Apple Mail, a daily
 note, Alertmanager alerts, GitHub pull requests / issues / notifications, Jira
 work items, Kubernetes issues and HTTP checks.
 
-- Runtime: Go (see `go.mod`), macOS only.
+- Runtime: Go (see `go.mod`). Releases cover macOS, Linux and Windows; the
+  apple-calendar and apple-mail panels only work on macOS.
 - Note: bubbletea/lipgloss v2 use the `charm.land/...` module paths.
 - No tests. Verification is done by building and running the app in tmux (see
   below).
