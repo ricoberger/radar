@@ -97,11 +97,13 @@ func (b *base) editorCmd(file string) *exec.Cmd {
 }
 
 // execCmd builds a command from pre-split fields plus a trailing argument.
+// The command is the user's configured editor and runs interactively via
+// tea.ExecProcess, so tainted input and missing context are by design.
 func execCmd(fields []string, arg string) *exec.Cmd {
 	if len(fields) == 0 {
 		fields = []string{"vim"}
 	}
-	return exec.Command(fields[0], append(fields[1:], arg)...)
+	return exec.Command(fields[0], append(fields[1:], arg)...) //nolint:gosec,noctx
 }
 
 // run executes a command and returns stdout; on failure the error is the
@@ -137,7 +139,7 @@ func runWithInput(timeout time.Duration, input string, env []string, command str
 
 // openExternal opens a URL with the macOS open command, detached.
 func openExternal(url string) {
-	cmd := exec.Command("open", url)
+	cmd := exec.Command("open", url) //nolint:noctx // Fire-and-forget, detached.
 	_ = cmd.Start()
 	if cmd.Process != nil {
 		_ = cmd.Process.Release()
@@ -146,7 +148,7 @@ func openExternal(url string) {
 
 // pbcopy puts text on the clipboard, ignoring errors.
 func pbcopy(text string) {
-	cmd := exec.Command("pbcopy")
+	cmd := exec.Command("pbcopy") //nolint:noctx // Local, effectively instant.
 	cmd.Stdin = strings.NewReader(text)
 	_ = cmd.Run()
 }

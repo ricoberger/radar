@@ -20,14 +20,15 @@ jobs:
           fetch-depth: 0
 
       - name: Setup
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+          cache: true
+          cache-dependency-path: go.sum
 
-      - name: Vet
-        run: |
-          go vet ./...
+      - name: Lint
+        uses: golangci/golangci-lint-action@v9
 
       - name: Build
         run: |
-          go build ./...
+          go build -o ./bin/radar .

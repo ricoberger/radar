@@ -113,7 +113,8 @@ is useful for screenshots and layout checks.
 
 ## Conventions
 
-- gofmt is the source of truth for style; `go vet ./...` must be clean.
+- gofmt is the source of truth for style; `golangci-lint run ./...` (see
+  `.golangci.yaml`) must be clean.
 - Keep README.md in sync with keybinding, panel and config changes.
 - Commits follow Conventional Commits.
 - Do not commit the `radar` binary (gitignored).

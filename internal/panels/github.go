@@ -41,7 +41,8 @@ var githubItemURL = regexp.MustCompile(`github\.com/[^/]+/[^/]+/(pull|issues)/\d
 func openGithubItem(url, mode string) tea.Cmd {
 	if mode == "fzfgh" && githubItemURL.MatchString(url) {
 		return func() tea.Msg {
-			return ui.ExecMsg{Cmd: exec.Command("fzfgh", "view", url)}
+			// Runs interactively via tea.ExecProcess, no context by design.
+			return ui.ExecMsg{Cmd: exec.Command("fzfgh", "view", url)} //nolint:noctx
 		}
 	}
 	openExternal(url)

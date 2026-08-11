@@ -225,7 +225,8 @@ func checkTarget(target httpTarget) CheckResult {
 	transport := &http.Transport{
 		DisableKeepAlives: true,
 		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: target.insecure,
+			// Opt-in per target via the insecure param, like the Ink app.
+			InsecureSkipVerify: target.insecure, //nolint:gosec
 			// Offer every cipher suite Go implements (including legacy
 			// RSA-key-exchange suites Go excludes by default) so checks
 			// succeed against old servers, matching Node's OpenSSL defaults.

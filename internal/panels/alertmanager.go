@@ -73,8 +73,13 @@ func validateAlertmanagerParams(params map[string]any, trail string) error {
 }
 
 func getJSON(url string, timeout time.Duration, out any) error {
-	client := &http.Client{Timeout: timeout}
-	resp, err := client.Get(url)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}
@@ -247,7 +252,7 @@ func (p *alertmanagerPanel) Apply(msg ui.PanelMsg) tea.Cmd {
 // editor, mirroring fzfalertmanager's view action.
 func (p *alertmanagerPanel) viewMarkdown(alert Alert) tea.Cmd {
 	file := filepath.Join(os.TempDir(), "radar-alert-"+alert.Fingerprint+".md")
-	if err := os.WriteFile(file, []byte(alert.Markdown), 0o644); err != nil {
+	if err := os.WriteFile(file, []byte(alert.Markdown), 0o600); err != nil {
 		return nil
 	}
 	cmd := p.editorCmd(file)

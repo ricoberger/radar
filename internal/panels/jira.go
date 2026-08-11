@@ -416,7 +416,7 @@ func (p *jiraPanel) viewWorkItem(key string) tea.Cmd {
 		}
 		doc := emitMarkdown(wi, flagField)
 		file := filepath.Join(os.TempDir(), "radar-jira-"+key+".md")
-		if err := os.WriteFile(file, []byte(doc), 0o644); err != nil {
+		if err := os.WriteFile(file, []byte(doc), 0o600); err != nil {
 			return nil
 		}
 		return ui.ExecMsg{Cmd: execCmd(strings.Fields(editor), file)}

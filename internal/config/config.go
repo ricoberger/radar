@@ -140,8 +140,10 @@ func Load(argPath string, reg Registry) (*Config, error) {
 	if configPath == "" {
 		configPath = defaultConfigPath()
 	}
-	raw, err := os.ReadFile(configPath)
+	// The path is user-supplied by design (--config flag / $RADAR_CONFIG).
+	raw, err := os.ReadFile(configPath) //nolint:gosec
 	if err != nil {
+		//nolint:staticcheck // User-facing CLI message, capitalized on purpose.
 		return nil, fmt.Errorf(
 			"No config file found at %s.\nCreate it or pass a path: radar --config <config.yaml>",
 			configPath,
@@ -150,6 +152,7 @@ func Load(argPath string, reg Registry) (*Config, error) {
 
 	cfg := &Config{Editor: defaultEditor()}
 	if err := yaml.Unmarshal(raw, cfg); err != nil {
+		//nolint:staticcheck // User-facing CLI message, capitalized on purpose.
 		return nil, fmt.Errorf("Failed to parse %s: %s", configPath, err)
 	}
 	if cfg.Editor == "" {

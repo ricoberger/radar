@@ -111,7 +111,8 @@ func ensureTodayNote(dir string) string {
 		template = strings.ReplaceAll(string(raw), "yyyy-mm-dd", today)
 	}
 	_ = os.MkdirAll(filepath.Dir(target), 0o755)
-	_ = os.WriteFile(target, []byte(template), 0o644)
+	// The note is a regular user document, so keep standard file perms.
+	_ = os.WriteFile(target, []byte(template), 0o644) //nolint:gosec
 	return target
 }
 

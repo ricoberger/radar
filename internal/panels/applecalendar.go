@@ -124,7 +124,7 @@ func calendarHelperPath() (string, error) {
 		return "", err
 	}
 	src := bin + ".swift"
-	if err := os.WriteFile(src, []byte(CalendarHelperSource), 0o644); err != nil {
+	if err := os.WriteFile(src, []byte(CalendarHelperSource), 0o600); err != nil {
 		return "", err
 	}
 	defer os.Remove(src)
