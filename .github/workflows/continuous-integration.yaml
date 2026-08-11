@@ -10,8 +10,8 @@ on:
       - main
 
 jobs:
-  node:
-    name: Node.js
+  go:
+    name: Go
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -20,15 +20,15 @@ jobs:
           fetch-depth: 0
 
       - name: Setup
-        uses: actions/setup-node@v7
+        uses: actions/setup-go@v7
         with:
-          node-version: 24
-          cache: npm
+          go-version-file: go.mod
+          cache: true
+          cache-dependency-path: go.sum
 
-      - name: Install Dependencies
-        run: |
-          npm ci
+      - name: Lint
+        uses: golangci/golangci-lint-action@v9
 
       - name: Build
         run: |
-          npm run build
+          go build -o ./bin/radar .

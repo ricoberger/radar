@@ -1,31 +1,31 @@
 # radar
 
 Personal AI generated TUI radar built with
-[Ink](https://github.com/vadimdemedes/ink) — everything on your radar in one
-terminal: Apple Calendar events, Apple Mail messages, the daily note,
-Alertmanager.app alerts, GitHub pull requests / issues / notifications, Jira
-work items, Kubernetes issues and HTTP checks in configurable dashboards.
+[Bubble Tea](https://github.com/charmbracelet/bubbletea) — everything on your
+radar in one terminal: Apple Calendar events, Apple Mail messages, the daily
+note, Alertmanager.app alerts, GitHub pull requests / issues / notifications,
+Jira work items, Kubernetes issues and HTTP checks in configurable dashboards.
 
 ![Demo](.github/assets/demo.png)
 
 ## Install
 
 ```sh
-npm install -g @ricoberger/radar
+go install github.com/ricoberger/radar@latest
 
 # Or install from source
-npm install
-npm link
+go build -o ./bin/radar .
 mkdir -p ~/.config/radar && cp config.yaml ~/.config/radar/config.yaml
-radar
+./bin/radar
 ```
 
-To try it without linking, run `npm run dev` — it uses the `config.yaml` from
-this repository.
+To try it without installing, run `go run . --config config.yaml` — it uses the
+`config.yaml` from this repository.
 
-The build compiles the TypeScript sources to `dist/` and the Swift EventKit
-helper to `bin/apple-calendar-helper`. The first run of the apple-calendar panel
-triggers a macOS prompt to grant your terminal access to your calendars.
+The apple-calendar panel compiles a small Swift EventKit helper (embedded in the
+binary) with `swiftc` on first use and caches it under `~/Library/Caches/radar`.
+The first run triggers a macOS prompt to grant your terminal access to your
+calendars.
 
 ## Keybindings
 
@@ -90,7 +90,7 @@ dashboards:
                       - stage-eu1
                       - dev-eu1
                     args:
-                      - '-A'
+                      - "-A"
         - direction: column
           weight: 2
           children:
@@ -115,7 +115,7 @@ dashboards:
             - panel: ricoberger-notes
               weight: 2
               params:
-                dir: '~/notes'
+                dir: "~/notes"
             - panel: apple-mail
 ```
 
@@ -130,8 +130,9 @@ every day they cover) and `day` is ignored. The default title reflects the
 configuration (e.g. `Calendar · Tomorrow`, `Calendar · Week`); an explicit
 `title` always wins. Events that are currently running are shown in blue.
 
-For this panel to work, the Swift EventKit helper must be compiled and the
-terminal must be granted access to your calendars.
+For this panel to work, `swiftc` must be available (Xcode Command Line Tools)
+and the terminal must be granted access to your calendars. This panel only works
+on macOS.
 
 ```yaml
 - panel: apple-calendar
@@ -150,7 +151,8 @@ selects `unread` (default) or `all`. `include` / `exclude` are lists of account
 names (as shown in Mail.app) to fetch from; if both are set they are ignored and
 all accounts are fetched.
 
-For this panel to work, Mail.app must be running.
+For this panel to work, Mail.app must be running. This panel only works on
+macOS.
 
 ```yaml
 - panel: apple-mail
@@ -177,7 +179,7 @@ configured editor; yesterday's note is never created retroactively.
   title: Daily Note
   interval: 300
   params:
-    dir: '~/notes'
+    dir: "~/notes"
     day: today
 ```
 
@@ -305,11 +307,11 @@ JSON.
 
 The `httpmonitor` panel checks a list of HTTP targets (like
 [httpmonitor](https://github.com/ricoberger/httpmonitor)) and renders one row
-per target with the status code (green = 2xx/3xx, yellow = 4xx, red = 5xx or
-`0` for failed checks) and the timings of the different phases: total, DNS
-lookup, TCP connection, TLS handshake, server processing and content transfer.
-Every check uses a fresh connection, redirects are not followed and a `-` marks
-a phase that did not happen. Each target requires a `name` and a http(s) `url`;
+per target with the status code (green = 2xx/3xx, yellow = 4xx, red = 5xx or `0`
+for failed checks) and the timings of the different phases: total, DNS lookup,
+TCP connection, TLS handshake, server processing and content transfer. Every
+check uses a fresh connection, redirects are not followed and a `-` marks a
+phase that did not happen. Each target requires a `name` and a http(s) `url`;
 optional per target: `method` (default `GET`), `body`, `username` / `password`
 (basic auth, takes precedence over `token`), `token` (bearer auth), `insecure`
 (skip TLS verification) and `timeout` (seconds, default `2`). `enter` opens the
@@ -323,6 +325,13 @@ selected target in the browser.
     targets:
       - name:
         url:
+        method: GET
+        body:
+        timeout: 2
+        username:
+        password:
+        token:
+        insecure: false
 ```
 
 ## Release
@@ -330,6 +339,6 @@ selected target in the browser.
 To release a new version run the following commands:
 
 ```sh
-npm version <patch|minor|major>
+git tag v<major>.<minor>.<patch>
 git push && git push --tags
 ```
