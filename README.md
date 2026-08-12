@@ -4,6 +4,7 @@ Personal AI generated TUI radar built with
 [Bubble Tea](https://github.com/charmbracelet/bubbletea) — everything on your
 radar in one terminal: Apple Calendar events, Apple Mail messages, the daily
 note, Alertmanager.app alerts, GitHub pull requests / issues / notifications,
+Copilot sessions,
 Jira work items, Kubernetes issues and HTTP checks in configurable dashboards.
 
 ![Demo](.github/assets/demo.png)
@@ -106,12 +107,17 @@ dashboards:
                     query: assignee:@me is:open
         - direction: column
           children:
-            - panel: apple-calendar
-            - panel: ricoberger-notes
-              weight: 2
-              params:
-                dir: "~/notes"
-            - panel: apple-mail
+            - direction: column
+              children:
+                - panel: copilot
+                - panel: ricoberger-notes
+                  weight: 2
+                  params:
+                    dir: "~/notes"
+            - direction: column
+              children:
+                - panel: apple-calendar
+                - panel: apple-mail
 ```
 
 ### Panels
@@ -252,6 +258,32 @@ and issues in
   params:
     limit: 50
     open: browser
+```
+
+#### `copilot`
+
+The `copilot` panel lists your GitHub Copilot coding-agent (cloud) sessions via
+`gh agent-task list` (`limit` defaults to `50`), newest first. Each row shows a
+status icon colored by the session state, the session name and the relative time
+since it was last updated. The status icons are: `in_progress` (blue,
+running), `idle` (yellow, waiting for your input), `queued` (gray), `completed`
+(green), `failed` (red) and `cancelled` (gray). `states` filters which states
+are shown and defaults to every state except `cancelled`, mirroring the web
+"Sessions" sidebar. `enter` on the selected session opens it in the web browser
+(`gh agent-task view <id> --web`).
+
+```yaml
+- panel: copilot
+  title: Copilot
+  interval: 300
+  params:
+    limit: 50
+    states:
+      - queued
+      - in_progress
+      - idle
+      - completed
+      - failed
 ```
 
 #### `jira`

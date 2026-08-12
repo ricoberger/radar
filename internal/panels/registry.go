@@ -48,6 +48,11 @@ func Registry() config.Registry {
 			Interval:       300,
 			ValidateParams: validateGithubNotificationsParams,
 		},
+		"copilot": {
+			Title:          "Copilot",
+			Interval:       300,
+			ValidateParams: validateCopilotParams,
+		},
 		"jira": {
 			Title:          "Jira",
 			Interval:       300,
@@ -83,6 +88,8 @@ func New(fp config.FlatPanel, editor string) (ui.Panel, error) {
 		return newGithubSearchPanel(fp, editor, "issues", iconIssue, "No issues"), nil
 	case "github-notifications":
 		return newGithubNotificationsPanel(fp, editor), nil
+	case "copilot":
+		return newCopilotPanel(fp, editor), nil
 	case "jira":
 		return newJiraPanel(fp, editor), nil
 	case "kubectl-issues":
@@ -95,4 +102,20 @@ func New(fp config.FlatPanel, editor string) (ui.Panel, error) {
 
 func validateGithubNotificationsParams(params map[string]any, trail string) error {
 	return validateOpenParam(params, trail)
+}
+
+func validateCopilotParams(params map[string]any, trail string) error {
+	if params["states"] == nil {
+		return nil
+	}
+	names, ok := strSliceParam(params, "states")
+	if !ok {
+		return errf(`%s: "params.states" must be a list of strings`, trail)
+	}
+	for _, n := range names {
+		if !copilotStates[n] {
+			return errf(`%s: "params.states" has invalid state %q`, trail, n)
+		}
+	}
+	return nil
 }

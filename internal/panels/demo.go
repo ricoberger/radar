@@ -313,6 +313,38 @@ func demoNotifications() []Notification {
 	return out
 }
 
+func demoCopilotSessions(limit int, states map[string]bool) []CopilotSession {
+	items := []struct {
+		state   string
+		name    string
+		minutes int
+	}{
+		{"in_progress", "Add Copilot session panel", 1},
+		{"idle", "Rightsize monitoring workloads", 12},
+		{"idle", "Improve Alt+G keymap functionality", 47},
+		{"queued", "Migrate config loader to viper", 63},
+		{"completed", "feat(api): add idempotency keys to checkout", 180},
+		{"failed", "Reimplement project in Go", 320},
+		{"cancelled", "Investigate waypoint metrics scraping", 900},
+	}
+	out := make([]CopilotSession, 0, len(items))
+	for i, it := range items {
+		if !states[it.state] {
+			continue
+		}
+		out = append(out, CopilotSession{
+			ID:        fmt.Sprintf("demo-%d", i),
+			Name:      it.name,
+			State:     it.state,
+			UpdatedAt: minutesAgo(it.minutes),
+		})
+	}
+	if len(out) > limit {
+		out = out[:limit]
+	}
+	return out
+}
+
 func demoHttpMonitor() []CheckResult {
 	fp := func(v float64) *float64 { return &v }
 	sum := func(vs ...*float64) *float64 {
