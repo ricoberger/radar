@@ -52,9 +52,14 @@ dashboards:
                     query: assignee:@me is:open
         - direction: column
           children:
-            - panel: apple-calendar
-            - panel: ricoberger-notes
-              weight: 2
-              params:
-                dir: "~/notes"
-            - panel: apple-mail
+            - direction: column
+              children:
+                - panel: copilot
+                - panel: ricoberger-notes
+                  weight: 2
+                  params:
+                    dir: "~/notes"
+            - direction: column
+              children:
+                - panel: apple-calendar
+                - panel: apple-mail

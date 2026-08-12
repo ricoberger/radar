@@ -101,13 +101,24 @@ func Config() *config.Config {
 						{
 							Direction: "column",
 							Children: []*config.LayoutNode{
-								{Panel: "apple-calendar"},
 								{
-									Panel:  "ricoberger-notes",
-									Weight: 2,
-									Params: map[string]any{"dir": "~/notes"},
+									Direction: "column",
+									Children: []*config.LayoutNode{
+										{Panel: "copilot"},
+										{
+											Panel:  "ricoberger-notes",
+											Weight: 2,
+											Params: map[string]any{"dir": "~/notes"},
+										},
+									},
 								},
-								{Panel: "apple-mail"},
+								{
+									Direction: "column",
+									Children: []*config.LayoutNode{
+										{Panel: "apple-calendar"},
+										{Panel: "apple-mail"},
+									},
+								},
 							},
 						},
 					},
