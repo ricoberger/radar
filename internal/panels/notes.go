@@ -78,12 +78,6 @@ func notePath(dir string, date time.Time) string {
 	return filepath.Join(dir, year, month, date.Format("2006-01-02")+".md")
 }
 
-var frontmatterRe = regexp.MustCompile(`(?s)^---\n.*?\n---\n+`)
-
-func stripFrontmatter(content string) string {
-	return frontmatterRe.ReplaceAllString(content, "")
-}
-
 func fetchDailyNote(p notesParams) (DailyNote, error) {
 	path := notePath(p.dir, noteDate(p.day))
 	if demo.Enabled() {
@@ -94,7 +88,7 @@ func fetchDailyNote(p notesParams) (DailyNote, error) {
 	if err != nil {
 		return DailyNote{Path: path, Content: nil}, nil
 	}
-	content := stripFrontmatter(string(raw))
+	content := string(raw)
 	return DailyNote{Path: path, Content: &content}, nil
 }
 
