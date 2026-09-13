@@ -2,7 +2,9 @@ package panels
 
 import (
 	"encoding/json"
-	"os/exec"
+	"fmt"
+	"sort"
+	"strings"
 	"time"
 
 	tea "charm.land/bubbletea/v2"
@@ -22,80 +24,128 @@ const (
 	iconCopilotUnknown    = "\uf059"
 )
 
-// copilotStates is the set of valid Copilot agent-task session states.
+// copilotStates is the set of valid Copilot agent-task states.
 var copilotStates = map[string]bool{
-	"queued":      true,
-	"in_progress": true,
-	"idle":        true,
-	"completed":   true,
-	"failed":      true,
-	"cancelled":   true,
+	"queued":           true,
+	"in_progress":      true,
+	"idle":             true,
+	"waiting_for_user": true,
+	"completed":        true,
+	"failed":           true,
+	"timed_out":        true,
+	"cancelled":        true,
 }
 
-// defaultCopilotStates mirrors the web "Sessions" sidebar, which hides
-// terminal (cancelled) sessions.
-var defaultCopilotStates = []string{"queued", "in_progress", "idle", "completed", "failed"}
+// defaultCopilotStates mirrors the web "Agents" view
+// (github.com/copilot/agents), which lists every non-archived task
+// regardless of state.
+var defaultCopilotStates = []string{
+	"queued", "in_progress", "idle", "waiting_for_user",
+	"completed", "failed", "timed_out", "cancelled",
+}
 
-// CopilotSession is one Copilot coding-agent (cloud) session from
-// `gh agent-task list`.
+// CopilotSession is one Copilot coding-agent (cloud) task from the
+// GitHub "agent tasks" API.
 type CopilotSession struct {
 	ID        string
 	Name      string
 	State     string
 	UpdatedAt string
+	RepoID    int64
 }
 
-// fetchCopilotSessions lists Copilot agent-task sessions, keeping only the
-// requested states and the newest limit entries.
+// fetchCopilotSessions lists Copilot agent tasks via the GitHub API,
+// excluding archived tasks (like the web UI) and keeping only the requested
+// states and the newest limit entries.
 func fetchCopilotSessions(limit int, states map[string]bool) ([]CopilotSession, error) {
-	var raw []struct {
-		ID        string `json:"id"`
-		Name      string `json:"name"`
-		State     string `json:"state"`
-		UpdatedAt string `json:"updatedAt"`
-	}
 	if demo.Enabled() {
 		return demoCopilotSessions(limit, states), nil
 	}
-	stdout, err := run(30*time.Second, "gh", "agent-task", "list",
-		"--json", "id,name,state,updatedAt", "--limit", itoa(limit))
+	perPage := limit
+	if perPage > 100 {
+		perPage = 100
+	}
+	if perPage < 1 {
+		perPage = 1
+	}
+	// The gh CLI cannot filter archived tasks, so query the underlying API
+	// directly. is_archived=false matches the web UI, which hides archived
+	// tasks.
+	path := fmt.Sprintf(
+		"/agents/tasks?per_page=%d&is_archived=false&sort=updated_at&direction=desc",
+		perPage,
+	)
+	if s := copilotStateQuery(states); s != "" {
+		path += "&state=" + s
+	}
+	stdout, err := run(30*time.Second, "gh", "api", path)
 	if err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal([]byte(stdout), &raw); err != nil {
+	var resp struct {
+		Tasks []struct {
+			ID         string  `json:"id"`
+			Name       string  `json:"name"`
+			State      string  `json:"state"`
+			UpdatedAt  string  `json:"updated_at"`
+			ArchivedAt *string `json:"archived_at"`
+			Repository struct {
+				ID int64 `json:"id"`
+			} `json:"repository"`
+		} `json:"tasks"`
+	}
+	if err := json.Unmarshal([]byte(stdout), &resp); err != nil {
 		return nil, err
 	}
-	items := make([]CopilotSession, 0, len(raw))
-	for _, s := range raw {
-		if !states[s.State] {
+	items := make([]CopilotSession, 0, len(resp.Tasks))
+	for _, t := range resp.Tasks {
+		if t.ArchivedAt != nil {
 			continue
 		}
-		name := s.Name
+		if len(states) > 0 && !states[t.State] {
+			continue
+		}
+		name := t.Name
 		if name == "" {
 			name = "-"
 		}
 		items = append(items, CopilotSession{
-			ID:        s.ID,
+			ID:        t.ID,
 			Name:      name,
-			State:     s.State,
-			UpdatedAt: s.UpdatedAt,
+			State:     t.State,
+			UpdatedAt: t.UpdatedAt,
+			RepoID:    t.Repository.ID,
 		})
 	}
 	return items, nil
 }
 
-// copilotStateStyle maps a session state to its icon and named color.
+// copilotStateQuery joins the requested states into the comma-separated value
+// expected by the agent-tasks API "state" filter.
+func copilotStateQuery(states map[string]bool) string {
+	if len(states) == 0 {
+		return ""
+	}
+	names := make([]string, 0, len(states))
+	for n := range states {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	return strings.Join(names, ",")
+}
+
+// copilotStateStyle maps a task state to its icon and named color.
 func copilotStateStyle(state string) (icon, color string) {
 	switch state {
 	case "in_progress":
 		return iconCopilotInProgress, "blue"
-	case "idle":
+	case "idle", "waiting_for_user":
 		return iconCopilotIdle, "yellow"
 	case "queued":
 		return iconCopilotQueued, "gray"
 	case "completed":
 		return iconCopilotCompleted, "green"
-	case "failed":
+	case "failed", "timed_out":
 		return iconCopilotFailed, "red"
 	case "cancelled":
 		return iconCopilotCancelled, "gray"
@@ -104,14 +154,20 @@ func copilotStateStyle(state string) (icon, color string) {
 	}
 }
 
-// openCopilotSession opens a session in the browser via the gh CLI,
-// detached and fire-and-forget.
-func openCopilotSession(id string) {
-	cmd := exec.Command("gh", "agent-task", "view", id, "--web") //nolint:noctx // Fire-and-forget, detached.
-	_ = cmd.Start()
-	if cmd.Process != nil {
-		_ = cmd.Process.Release()
+// openCopilotTask resolves the task's repository name and opens the task in the
+// browser. The agent-tasks list API only returns the repository id, so the
+// name is looked up on demand.
+func openCopilotTask(repoID int64, taskID string) {
+	full, err := run(30*time.Second, "gh", "api",
+		fmt.Sprintf("/repositories/%d", repoID), "-q", ".full_name")
+	if err != nil {
+		return
 	}
+	full = strings.TrimSpace(full)
+	if full == "" {
+		return
+	}
+	openExternal("https://github.com/" + full + "/tasks/" + taskID)
 }
 
 type copilotPanel struct {
@@ -165,8 +221,12 @@ func (p *copilotPanel) Apply(msg ui.PanelMsg) tea.Cmd {
 
 func (p *copilotPanel) HandleKey(msg tea.KeyPressMsg) tea.Cmd {
 	_, enter := p.list.Handle(msg.String(), len(p.items))
-	if enter && len(p.items) > 0 {
-		openCopilotSession(p.items[p.list.Clamp(len(p.items))].ID)
+	if enter && len(p.items) > 0 && !demo.Enabled() {
+		it := p.items[p.list.Clamp(len(p.items))]
+		return func() tea.Msg {
+			openCopilotTask(it.RepoID, it.ID)
+			return nil
+		}
 	}
 	return nil
 }
@@ -175,7 +235,7 @@ func (p *copilotPanel) View(focused bool) string {
 	w, h := p.contentSize()
 	content := ""
 	if p.hasData && len(p.items) == 0 {
-		content = line(w, dim("No sessions"))
+		content = line(w, dim("No agents"))
 	} else {
 		selected := -1
 		if focused {
