@@ -271,7 +271,8 @@ the relative time since it was last updated. The status icons are: `in_progress`
 `queued` (gray), `completed` (green), `failed` / `timed_out` (red) and
 `cancelled` (gray). `states` filters which states are shown and defaults to every
 state (all non-archived tasks). `enter` on the selected task opens it in the web
-browser.
+browser. Set `archived: true` to list your archived tasks instead of the active
+ones (defaults to `false`).
 
 ```yaml
 - panel: copilot
@@ -279,6 +280,7 @@ browser.
   interval: 300
   params:
     limit: 50
+    archived: false
     states:
       - queued
       - in_progress

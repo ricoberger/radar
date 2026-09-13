@@ -54,10 +54,11 @@ type CopilotSession struct {
 	RepoID    int64
 }
 
-// fetchCopilotSessions lists Copilot agent tasks via the GitHub API,
-// excluding archived tasks (like the web UI) and keeping only the requested
-// states and the newest limit entries.
-func fetchCopilotSessions(limit int, states map[string]bool) ([]CopilotSession, error) {
+// fetchCopilotSessions lists Copilot agent tasks via the GitHub API. When
+// archived is false it excludes archived tasks (like the web UI); when true it
+// returns only archived tasks. It keeps only the requested states and the
+// newest limit entries.
+func fetchCopilotSessions(limit int, states map[string]bool, archived bool) ([]CopilotSession, error) {
 	if demo.Enabled() {
 		return demoCopilotSessions(limit, states), nil
 	}
@@ -68,12 +69,12 @@ func fetchCopilotSessions(limit int, states map[string]bool) ([]CopilotSession, 
 	if perPage < 1 {
 		perPage = 1
 	}
-	// The gh CLI cannot filter archived tasks, so query the underlying API
+	// The gh CLI cannot filter by archived state, so query the underlying API
 	// directly. is_archived=false matches the web UI, which hides archived
-	// tasks.
+	// tasks; is_archived=true returns only archived tasks.
 	path := fmt.Sprintf(
-		"/agents/tasks?per_page=%d&is_archived=false&sort=updated_at&direction=desc",
-		perPage,
+		"/agents/tasks?per_page=%d&is_archived=%t&sort=updated_at&direction=desc",
+		perPage, archived,
 	)
 	if s := copilotStateQuery(states); s != "" {
 		path += "&state=" + s
@@ -99,7 +100,7 @@ func fetchCopilotSessions(limit int, states map[string]bool) ([]CopilotSession, 
 	}
 	items := make([]CopilotSession, 0, len(resp.Tasks))
 	for _, t := range resp.Tasks {
-		if t.ArchivedAt != nil {
+		if (t.ArchivedAt != nil) != archived {
 			continue
 		}
 		if len(states) > 0 && !states[t.State] {
@@ -172,16 +173,18 @@ func openCopilotTask(repoID int64, taskID string) {
 
 type copilotPanel struct {
 	base
-	limit  int
-	states map[string]bool
-	items  []CopilotSession
+	limit    int
+	states   map[string]bool
+	archived bool
+	items    []CopilotSession
 }
 
 func newCopilotPanel(fp config.FlatPanel, editor string) *copilotPanel {
 	return &copilotPanel{
-		base:   newBase(fp.ID, fp.Index, fp.Title, fp.Interval, editor),
-		limit:  intParam(fp.Params, "limit", 50),
-		states: copilotStatesParam(fp.Params),
+		base:     newBase(fp.ID, fp.Index, fp.Title, fp.Interval, editor),
+		limit:    intParam(fp.Params, "limit", 50),
+		states:   copilotStatesParam(fp.Params),
+		archived: boolParam(fp.Params, "archived", false),
 	}
 }
 
@@ -204,9 +207,9 @@ func (p *copilotPanel) Fetch() tea.Cmd {
 		return nil
 	}
 	p.beginFetch()
-	id, limit, states := p.id, p.limit, p.states
+	id, limit, states, archived := p.id, p.limit, p.states, p.archived
 	return func() tea.Msg {
-		items, err := fetchCopilotSessions(limit, states)
+		items, err := fetchCopilotSessions(limit, states, archived)
 		return ui.FetchMsg{ID: id, Data: items, Err: err}
 	}
 }

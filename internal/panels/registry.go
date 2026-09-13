@@ -105,6 +105,11 @@ func validateGithubNotificationsParams(params map[string]any, trail string) erro
 }
 
 func validateCopilotParams(params map[string]any, trail string) error {
+	if v, ok := params["archived"]; ok {
+		if _, isBool := v.(bool); !isBool {
+			return errf(`%s: "params.archived" must be a boolean`, trail)
+		}
+	}
 	if params["states"] == nil {
 		return nil
 	}
