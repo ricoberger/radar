@@ -4,7 +4,7 @@ Personal AI generated TUI radar built with
 [Bubble Tea](https://github.com/charmbracelet/bubbletea) — everything on your
 radar in one terminal: Apple Calendar events, Apple Mail messages, the daily
 note, Alertmanager.app alerts, GitHub pull requests / issues / notifications,
-Copilot sessions, Jira work items, Kubernetes issues and HTTP checks in
+Copilot agents, Jira work items, Kubernetes issues and HTTP checks in
 configurable dashboards.
 
 ![Demo](.github/assets/demo.png)
@@ -262,15 +262,17 @@ and issues in
 
 #### `copilot`
 
-The `copilot` panel lists your GitHub Copilot coding-agent (cloud) sessions via
-`gh agent-task list` (`limit` defaults to `50`), newest first. Each row shows a
-status icon colored by the session state, the session name and the relative time
-since it was last updated. The status icons are: `in_progress` (blue, running),
-`idle` (yellow, waiting for your input), `queued` (gray), `completed` (green),
-`failed` (red) and `cancelled` (gray). `states` filters which states are shown
-and defaults to every state except `cancelled`, mirroring the web "Sessions"
-sidebar. `enter` on the selected session opens it in the web browser
-(`gh agent-task view <id> --web`).
+The `copilot` panel lists your GitHub Copilot coding-agent (cloud) tasks (the
+same agents shown at [github.com/copilot/agents](https://github.com/copilot/agents),
+`limit` defaults to `50`), newest first. Archived tasks are hidden, mirroring the
+web UI. Each row shows a status icon colored by the task state, the task name and
+the relative time since it was last updated. The status icons are: `in_progress`
+(blue, running), `idle` / `waiting_for_user` (yellow, waiting for your input),
+`queued` (gray), `completed` (green), `failed` / `timed_out` (red) and
+`cancelled` (gray). `states` filters which states are shown and defaults to every
+state (all non-archived tasks). `enter` on the selected task opens it in the web
+browser. Set `archived: true` to list your archived tasks instead of the active
+ones (defaults to `false`).
 
 ```yaml
 - panel: copilot
@@ -278,12 +280,16 @@ sidebar. `enter` on the selected session opens it in the web browser
   interval: 300
   params:
     limit: 50
+    archived: false
     states:
       - queued
       - in_progress
       - idle
+      - waiting_for_user
       - completed
       - failed
+      - timed_out
+      - cancelled
 ```
 
 #### `jira`
